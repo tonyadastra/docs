@@ -1,0 +1,596 @@
+---
+title: "JavaScript Examples"
+description: "Complete JavaScript and TypeScript examples for the Firemoon Studio API"
+---
+
+## Setup
+
+### Installing Dependencies
+
+```bash
+npm install node-fetch  # For Node.js < 18
+# or
+npm install undici      # Modern alternative
+```
+
+### Environment Setup
+
+```javascript
+// .env
+FIREMOON_API_KEY=your_api_key_here
+```
+
+```javascript
+// Load environment variables
+require('dotenv').config();
+const API_KEY = process.env.FIREMOON_API_KEY;
+const BASE_URL = 'https://firemoon.studio/api/v1';
+```
+
+## Basic Image Generation
+
+```javascript
+async function generateImage(prompt, options = {}) {
+  const response = await fetch(`${BASE_URL}/flux/dev`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${API_KEY}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      prompt,
+      num_images: options.numImages || 1,
+      image_size: options.size || 'landscape_4_3',
+      guidance_scale: options.guidance || 3.5,
+      ...options
+    })
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(`API Error: ${error.message}`);
+  }
+
+  return await response.json();
+}
+
+// Usage
+try {
+  const result = await generateImage('A beautiful sunset over mountains');
+  console.log('Generated image:', result.images[0].url);
+} catch (error) {
+  console.error('Error:', error.message);
+}
+```
+
+## Video Generation
+
+```javascript
+async function generateVideo(prompt, options = {}) {
+  const response = await fetch(`${BASE_URL}/kling/kling-2-1-master`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${API_KEY}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      prompt,
+      duration: options.duration || '5',
+      aspect_ratio: options.aspectRatio || '16:9',
+      ...options
+    })
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(`API Error: ${error.message}`);
+  }
+
+  return await response.json();
+}
+
+// Usage
+const videoResult = await generateVideo(
+  'A butterfly emerging from its chrysalis',
+  { duration: '10' }
+);
+console.log('Generated video:', videoResult.videos[0].url);
+```
+
+## Character Editing with Ideogram
+
+```javascript
+async function editCharacter(prompt, imageUrl, options = {}) {
+  const response = await fetch(`${BASE_URL}/ideogram/v3-character-edit`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${API_KEY}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      prompt,
+      image_url: imageUrl,
+      style: options.style || 'realistic',
+      magic_prompt_option: options.magicPrompt || 'auto',
+      ...options
+    })
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(`API Error: ${error.message}`);
+  }
+
+  return await response.json();
+}
+
+// Usage
+const editResult = await editCharacter(
+  'Change the character to wear a red jacket',
+  'https://example.com/character.jpg'
+);
+console.log('Edited image:', editResult.images[0].url);
+```
+
+## Advanced Client Class
+
+```javascript
+class FiremoonStudio {
+  constructor(apiKey, baseUrl = 'https://firemoon.studio/api/v1') {
+    this.apiKey = apiKey;
+    this.baseUrl = baseUrl;
+  }
+
+  async request(endpoint, params) {
+    const response = await fetch(`${this.baseUrl}${endpoint}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${this.apiKey}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(params)
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(`API Error: ${error.message}`);
+    }
+
+    return await response.json();
+  }
+
+  // Image generation methods
+  async generateImage(provider, model, params) {
+    return this.request(`/${provider}/${model}`, params);
+  }
+
+  // Convenience methods
+  async fluxDev(prompt, options = {}) {
+    return this.generateImage('flux', 'dev', {
+      prompt,
+      num_images: 1,
+      image_size: 'landscape_4_3',
+      guidance_scale: 3.5,
+      ...options
+    });
+  }
+
+  async klingVideo(prompt, options = {}) {
+    return this.generateImage('kling', 'kling-2-1-master', {
+      prompt,
+      duration: '5',
+      aspect_ratio: '16:9',
+      ...options
+    });
+  }
+
+  async ideogramEdit(prompt, imageUrl, options = {}) {
+    return this.generateImage('ideogram', 'v3-character-edit', {
+      prompt,
+      image_url: imageUrl,
+      style: 'realistic',
+      ...options
+    });
+  }
+}
+
+// Usage
+const client = new FiremoonStudio(process.env.FIREMOON_API_KEY);
+
+// Generate multiple images
+const images = await client.fluxDev('A futuristic city', { num_images: 3 });
+images.images.forEach((img, i) => {
+  console.log(`Image ${i + 1}:`, img.url);
+});
+
+// Generate video
+const video = await client.klingVideo('A rocket launch');
+console.log('Video:', video.videos[0].url);
+```
+
+## Error Handling and Retries
+
+```javascript
+class FiremoonAPIError extends Error {
+  constructor(message, status, details) {
+    super(message);
+    this.name = 'FiremoonAPIError';
+    this.status = status;
+    this.details = details;
+  }
+}
+
+async function requestWithRetry(endpoint, params, maxRetries = 3) {
+  let lastError;
+
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      const response = await fetch(`${BASE_URL}${endpoint}`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${API_KEY}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(params)
+      });
+
+      if (response.status === 429) {
+        // Rate limited - wait and retry
+        const resetTime = response.headers.get('X-RateLimit-Reset');
+        const waitTime = Math.min(1000 * Math.pow(2, attempt), 30000);
+        console.log(`Rate limited. Waiting ${waitTime}ms before retry ${attempt}/${maxRetries}`);
+        await new Promise(resolve => setTimeout(resolve, waitTime));
+        continue;
+      }
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new FiremoonAPIError(error.message, response.status, error);
+      }
+
+      return await response.json();
+
+    } catch (error) {
+      lastError = error;
+
+      // Don't retry on client errors (4xx except 429)
+      if (error.status >= 400 && error.status < 500 && error.status !== 429) {
+        break;
+      }
+
+      // Don't retry on last attempt
+      if (attempt === maxRetries) {
+        break;
+      }
+
+      console.log(`Attempt ${attempt} failed, retrying...`);
+    }
+  }
+
+  throw lastError;
+}
+
+// Usage with error handling
+async function safeGenerateImage(prompt) {
+  try {
+    return await requestWithRetry('/flux/dev', { prompt });
+  } catch (error) {
+    if (error instanceof FiremoonAPIError) {
+      switch (error.status) {
+        case 400:
+          console.error('Invalid request:', error.details);
+          break;
+        case 401:
+          console.error('Invalid API key');
+          break;
+        case 403:
+          console.error('Access denied to this provider');
+          break;
+        default:
+          console.error('API error:', error.message);
+      }
+    } else {
+      console.error('Network error:', error.message);
+    }
+    throw error;
+  }
+}
+```
+
+## Batch Processing
+
+```javascript
+async function generateBatch(prompts, options = {}) {
+  const batchSize = options.batchSize || 3; // Process in batches to avoid rate limits
+  const results = [];
+  const errors = [];
+
+  for (let i = 0; i < prompts.length; i += batchSize) {
+    const batch = prompts.slice(i, i + batchSize);
+
+    const batchPromises = batch.map(async (prompt, index) => {
+      try {
+        const result = await requestWithRetry('/flux/dev', {
+          prompt,
+          num_images: 1,
+          ...options
+        });
+        return { success: true, prompt, result, batchIndex: i + index };
+      } catch (error) {
+        errors.push({ prompt, error, batchIndex: i + index });
+        return { success: false, prompt, error, batchIndex: i + index };
+      }
+    });
+
+    const batchResults = await Promise.all(batchPromises);
+    results.push(...batchResults);
+
+    // Small delay between batches to be respectful
+    if (i + batchSize < prompts.length) {
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+  }
+
+  return { results, errors };
+}
+
+// Usage
+const prompts = [
+  'A sunset over mountains',
+  'A futuristic city',
+  'A serene lake',
+  'A space rocket launch',
+  'A butterfly on a flower'
+];
+
+const { results, errors } = await generateBatch(prompts, {
+  batchSize: 2,
+  guidance_scale: 4.0
+});
+
+console.log(`Generated ${results.filter(r => r.success).length} images`);
+if (errors.length > 0) {
+  console.log(`Failed to generate ${errors.length} images`);
+}
+```
+
+## Rate Limit Monitoring
+
+```javascript
+class RateLimitTracker {
+  constructor() {
+    this.requests = [];
+    this.warnings = [];
+  }
+
+  trackRequest() {
+    const now = Date.now();
+    // Keep only requests from the last minute
+    this.requests = this.requests.filter(time => now - time < 60000);
+    this.requests.push(now);
+
+    const requestsPerMinute = this.requests.length;
+
+    if (requestsPerMinute > 45) { // 75% of 60 limit
+      console.warn(`Approaching rate limit: ${requestsPerMinute}/60 requests/minute`);
+      this.warnings.push({
+        timestamp: now,
+        requestsPerMinute,
+        message: 'Approaching rate limit'
+      });
+    }
+  }
+
+  getStats() {
+    const now = Date.now();
+    const lastMinute = this.requests.filter(time => now - time < 60000);
+    const lastHour = this.requests.filter(time => now - time < 3600000);
+
+    return {
+      lastMinute: lastMinute.length,
+      lastHour: lastHour.length,
+      warnings: this.warnings.slice(-10) // Last 10 warnings
+    };
+  }
+}
+
+// Usage
+const tracker = new RateLimitTracker();
+
+// Wrap your API calls
+async function trackedRequest(endpoint, params) {
+  tracker.trackRequest();
+  return requestWithRetry(endpoint, params);
+}
+
+// Check stats periodically
+setInterval(() => {
+  const stats = tracker.getStats();
+  if (stats.warnings.length > 0) {
+    console.log('Rate limit warnings:', stats.warnings.length);
+  }
+}, 10000);
+```
+
+## TypeScript Support
+
+```typescript
+interface GenerationParams {
+  prompt: string;
+  num_images?: number;
+  image_size?: string;
+  guidance_scale?: number;
+  num_inference_steps?: number;
+  seed?: number;
+}
+
+interface VideoParams {
+  prompt: string;
+  duration?: string;
+  aspect_ratio?: string;
+  seed?: number;
+}
+
+interface ImageResult {
+  url: string;
+  width: number;
+  height: number;
+  content_type: string;
+}
+
+interface VideoResult {
+  url: string;
+  duration: number;
+  width: number;
+  height: number;
+  content_type: string;
+}
+
+interface APIResponse<T> {
+  images?: T[];
+  videos?: T[];
+  seed: number;
+  has_nsfw_concepts?: boolean[];
+  timings: {
+    inference: number;
+  };
+}
+
+class TypedFiremoonClient {
+  constructor(private apiKey: string, private baseUrl = 'https://firemoon.studio/api/v1') {}
+
+  private async request<T>(endpoint: string, params: any): Promise<APIResponse<T>> {
+    const response = await fetch(`${this.baseUrl}${endpoint}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${this.apiKey}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(params)
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(`API Error: ${error.message}`);
+    }
+
+    return response.json();
+  }
+
+  async generateImage(provider: string, model: string, params: GenerationParams): Promise<APIResponse<ImageResult>> {
+    return this.request(`/ ${provider}/${model}`, params);
+  }
+
+  async generateVideo(provider: string, model: string, params: VideoParams): Promise<APIResponse<VideoResult>> {
+    return this.request(`/${provider}/${model}`, params);
+  }
+}
+
+// Usage
+const client = new TypedFiremoonClient(process.env.FIREMOON_API_KEY!);
+
+const imageResult = await client.generateImage('flux', 'dev', {
+  prompt: 'A beautiful sunset',
+  num_images: 2
+});
+
+imageResult.images?.forEach(img => {
+  console.log(`Image: ${img.width}x${img.height} - ${img.url}`);
+});
+```
+
+## React Hook Example
+
+```javascript
+import { useState, useCallback } from 'react';
+
+function useFiremoonGeneration() {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [results, setResults] = useState([]);
+
+  const generate = useCallback(async (provider, model, params) => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch(`/api/v1/${provider}/${model}`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${process.env.REACT_APP_FIREMOON_API_KEY}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(params)
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      setResults(prev => [...prev, { params, data, timestamp: Date.now() }]);
+      return data;
+    } catch (err) {
+      setError(err.message);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const clearResults = useCallback(() => {
+    setResults([]);
+    setError(null);
+  }, []);
+
+  return {
+    generate,
+    loading,
+    error,
+    results,
+    clearResults
+  };
+}
+
+// Usage in a React component
+function ImageGenerator() {
+  const { generate, loading, error, results } = useFiremoonGeneration();
+  const [prompt, setPrompt] = useState('');
+
+  const handleGenerate = async () => {
+    try {
+      await generate('flux', 'dev', { prompt, num_images: 1 });
+    } catch (err) {
+      console.error('Generation failed:', err);
+    }
+  };
+
+  return (
+    <div>
+      <input
+        value={prompt}
+        onChange={(e) => setPrompt(e.target.value)}
+        placeholder="Enter a prompt..."
+      />
+      <button onClick={handleGenerate} disabled={loading || !prompt}>
+        {loading ? 'Generating...' : 'Generate'}
+      </button>
+
+      {error && <div style={{color: 'red'}}>{error}</div>}
+
+      {results.map((result, i) => (
+        <div key={i}>
+          <p>Prompt: {result.params.prompt}</p>
+          {result.data.images?.map((img, j) => (
+            <img key={j} src={img.url} alt={`Generated ${j + 1}`} />
+          ))}
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+<Note>
+  These examples use modern JavaScript features. For older Node.js versions, consider using callbacks or transpiling with Babel.
+</Note>

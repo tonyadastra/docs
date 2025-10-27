@@ -1,0 +1,143 @@
+---
+title: "API Overview"
+description: "Complete reference for the Firemoon Studio API endpoints"
+---
+
+## Base URL
+
+```
+https://firemoon.studio/api/v1
+```
+
+All API requests require authentication using an API key in the Authorization header:
+
+```
+Authorization: Bearer YOUR_API_KEY
+```
+
+## Endpoints
+
+### Core Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/api/v1` | API information and available endpoints |
+| `GET` | `/api/v1/providers` | List all available providers |
+| `GET` | `/api/v1/providers/{provider}/models` | List models for a specific provider |
+| `GET` | `/api/v1/{provider}/{model}` | Get model information and schema |
+
+### Generation Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/api/v1/{provider}/{model}` | Generate content using a specific model |
+
+## Rate Limiting
+
+Rate limits are enforced per API key with information returned in response headers:
+
+- `X-RateLimit-Limit`: Maximum requests allowed per minute
+- `X-RateLimit-Remaining`: Remaining requests in current window
+- `X-RateLimit-Reset`: Timestamp when the rate limit resets
+
+## Response Format
+
+All generation endpoints return a consistent response structure:
+
+```json
+{
+  "images": [
+    {
+      "url": "https://blob.vercel-storage.com/...",
+      "width": 1024,
+      "height": 768,
+      "content_type": "image/jpeg"
+    }
+  ],
+  "seed": 123456789,
+  "has_nsfw_concepts": [false],
+  "timings": {
+    "inference": 2.5
+  }
+}
+```
+
+For video generation, the response includes video URLs instead of images:
+
+```json
+{
+  "videos": [
+    {
+      "url": "https://blob.vercel-storage.com/...",
+      "duration": 5,
+      "width": 1920,
+      "height": 1088,
+      "content_type": "video/mp4"
+    }
+  ],
+  "seed": 123456789,
+  "timings": {
+    "inference": 15.2
+  }
+}
+```
+
+## Error Responses
+
+### 401 Unauthorized
+
+```json
+{
+  "error": "Invalid API key",
+  "message": "Please provide a valid API key in the Authorization header"
+}
+```
+
+### 403 Forbidden
+
+```json
+{
+  "error": "Access denied",
+  "message": "Your API key does not have access to provider: flux"
+}
+```
+
+### 404 Not Found
+
+```json
+{
+  "error": "Model not found",
+  "message": "Model configuration not found for flux/invalid-model"
+}
+```
+
+### 429 Too Many Requests
+
+```json
+{
+  "error": "Rate limit exceeded",
+  "message": "Rate limit exceeded. Try again in 45 seconds.",
+  "resetAt": "2025-10-23T10:30:00.000Z"
+}
+```
+
+### 400 Bad Request
+
+```json
+{
+  "error": "Invalid input",
+  "message": "Input validation failed",
+  "errors": [
+    "Missing required field: prompt"
+  ]
+}
+```
+
+### 500 Internal Server Error
+
+```json
+{
+  "error": "Generation failed",
+  "message": "Failed to generate image: timeout"
+}
+```

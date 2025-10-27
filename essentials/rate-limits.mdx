@@ -1,0 +1,222 @@
+---
+title: "Rate Limiting"
+description: "Understanding and handling API rate limits"
+---
+
+## Rate Limit Overview
+
+Firemoon Studio enforces rate limits to ensure fair usage and system stability. Rate limits are applied per API key and reset every minute.
+
+## Rate Limit Headers
+
+All API responses include rate limit information in headers:
+
+```
+X-RateLimit-Limit: 60
+X-RateLimit-Remaining: 59
+X-RateLimit-Reset: 1697123460
+```
+
+## Default Limits
+
+| Tier | Requests per Minute | Requests per Day | Requests per Month |
+|------|-------------------|------------------|-------------------|
+| Free | 10 | 100 | 1,000 |
+| Pro | 60 | 1,000 | 10,000 |
+| Enterprise | Custom | Custom | Custom |
+
+## Handling Rate Limits
+
+### Exponential Backoff
+
+Implement exponential backoff when rate limited:
+
+```javascript
+async function makeRequest(params, attempt = 1) {
+  try {
+    const response = await fetch('/api/v1/flux/dev', {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer your_api_key',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(params)
+    });
+
+    if (response.status === 429) {
+      const resetTime = response.headers.get('X-RateLimit-Reset');
+      const waitTime = Math.min(1000 * Math.pow(2, attempt), 30000); // Max 30s
+
+      console.log(`Rate limited. Waiting ${waitTime}ms before retry...`);
+      await new Promise(resolve => setTimeout(resolve, waitTime));
+
+      return makeRequest(params, attempt + 1);
+    }
+
+    return response.json();
+  } catch (error) {
+    throw error;
+  }
+}
+```
+
+### Python Example
+
+```python
+import time
+import requests
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
+
+def make_request_with_retry(params, max_retries=3):
+    session = requests.Session()
+    retry = Retry(
+        total=max_retries,
+        backoff_factor=2,
+        status_forcelist=[429]
+    )
+    session.mount('https://', HTTPAdapter(max_retries=retry))
+
+    response = session.post(
+        'https://firemoon.studio/api/v1/flux/dev',
+        headers={
+            'Authorization': 'Bearer your_api_key',
+            'Content-Type': 'application/json'
+        },
+        json=params
+    )
+
+    return response.json()
+```
+
+## Rate Limit Response
+
+When you exceed rate limits, you'll receive a 429 response:
+
+```json
+{
+  "error": "Rate limit exceeded",
+  "message": "Rate limit exceeded. Try again in 45 seconds.",
+  "resetAt": "2025-10-23T10:30:00.000Z"
+}
+```
+
+## Best Practices
+
+### Queue Requests
+Use a queue to manage concurrent requests:
+
+```javascript
+class RateLimitedQueue {
+  constructor(rateLimit = 60) {
+    this.queue = [];
+    this.processing = false;
+    this.rateLimit = rateLimit;
+    this.requestsThisMinute = 0;
+    this.minuteStart = Date.now();
+  }
+
+  async add(requestFn) {
+    return new Promise((resolve, reject) => {
+      this.queue.push({ requestFn, resolve, reject });
+      this.process();
+    });
+  }
+
+  async process() {
+    if (this.processing || this.queue.length === 0) return;
+
+    // Reset counter every minute
+    const now = Date.now();
+    if (now - this.minuteStart >= 60000) {
+      this.requestsThisMinute = 0;
+      this.minuteStart = now;
+    }
+
+    if (this.requestsThisMinute >= this.rateLimit) {
+      setTimeout(() => this.process(), 1000);
+      return;
+    }
+
+    this.processing = true;
+    const { requestFn, resolve, reject } = this.queue.shift();
+
+    try {
+      this.requestsThisMinute++;
+      const result = await requestFn();
+      resolve(result);
+    } catch (error) {
+      reject(error);
+    } finally {
+      this.processing = false;
+      this.process();
+    }
+  }
+}
+
+// Usage
+const queue = new RateLimitedQueue();
+
+const result = await queue.add(() =>
+  fetch('/api/v1/flux/dev', {
+    method: 'POST',
+    headers: {
+      'Authorization': 'Bearer your_api_key',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ prompt: 'A sunset' })
+  }).then(r => r.json())
+);
+```
+
+### Monitor Usage
+Track your API usage to avoid hitting limits:
+
+```javascript
+class UsageTracker {
+  constructor() {
+    this.requests = [];
+    this.onLimit接近 = null;
+  }
+
+  trackRequest() {
+    const now = Date.now();
+    this.requests = this.requests.filter(time => now - time < 60000);
+
+    if (this.requests.length >= 50) { // 80% of 60 limit
+      this.onLimit接近 && this.onLimit接近();
+    }
+
+    this.requests.push(now);
+  }
+
+  getRequestsPerMinute() {
+    const now = Date.now();
+    return this.requests.filter(time => now - time < 60000).length;
+  }
+}
+```
+
+## Upgrading Limits
+
+Need higher rate limits? Contact us for upgraded plans:
+
+- **Pro**: 60 requests/minute, 10,000/month
+- **Enterprise**: Custom limits based on your needs
+
+<Button href="mailto:contact@firemoon.studio">
+  Upgrade Rate Limits
+</Button>
+
+## Burst Handling
+
+For applications that need occasional bursts:
+
+1. Implement request queuing
+2. Use exponential backoff for retries
+3. Consider upgrading to Pro or Enterprise plans
+4. Distribute requests across multiple API keys if applicable
+
+<Note>
+  Rate limits help ensure reliable service for all users. Contact us if you need consistently higher limits for your use case.
+</Note>

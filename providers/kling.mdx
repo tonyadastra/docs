@@ -1,0 +1,177 @@
+---
+title: "Kling Provider"
+description: "Professional video generation with Kling AI models"
+---
+
+## Overview
+
+Kling provides cinematic-quality video generation with smooth motion and professional results. Perfect for marketing videos, social media content, and storytelling.
+
+## Available Models
+
+### kling-2-1-master
+
+The latest Kling video generation model with enhanced quality and motion smoothness.
+
+**Endpoint:** `POST /api/v1/kling/kling-2-1-master`
+
+**Best for:**
+- Marketing and promotional videos
+- Social media content
+- Product demonstrations
+- Storytelling and narratives
+
+**Performance:**
+- **Inference time:** 10-30 seconds (depending on duration)
+- **Quality:** Professional cinematic
+- **Cost:** Medium
+
+## Parameters
+
+### Required Parameters
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `prompt` | string | Description of the video scene and action |
+
+### Optional Parameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `duration` | string | "5" | Video duration in seconds ("5" or "10") |
+| `aspect_ratio` | string | "16:9" | Video aspect ratio ("16:9" or "9:16") |
+| `seed` | number | random | Random seed for reproducible results |
+
+## Examples
+
+### Basic Video Generation
+
+```javascript
+const response = await fetch('/api/v1/kling/kling-2-1-master', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer your_api_key',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    prompt: 'A butterfly emerging from its chrysalis and flying away',
+    duration: '5',
+    aspect_ratio: '16:9'
+  })
+});
+
+const result = await response.json();
+console.log('Video URL:', result.videos[0].url);
+```
+
+### Marketing Video
+
+```javascript
+const response = await fetch('/api/v1/kling/kling-2-1-master', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer your_api_key',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    prompt: 'A sleek electric car driving through a futuristic city at sunset, smooth camera movement following the vehicle',
+    duration: '10',
+    aspect_ratio: '16:9',
+    seed: 12345
+  })
+});
+
+const result = await response.json();
+console.log('Marketing video:', result.videos[0].url);
+```
+
+### Python Example
+
+```python
+import requests
+
+def generate_kling_video(prompt, duration='5', aspect_ratio='16:9'):
+    response = requests.post(
+        'https://firemoon.studio/api/v1/kling/kling-2-1-master',
+        headers={
+            'Authorization': 'Bearer your_api_key',
+            'Content-Type': 'application/json'
+        },
+        json={
+            'prompt': prompt,
+            'duration': duration,
+            'aspect_ratio': aspect_ratio
+        }
+    )
+
+    response.raise_for_status()
+    return response.json()
+
+# Usage
+result = generate_kling_video(
+    'A rocket launching into space with dramatic flames and smoke',
+    duration='10'
+)
+
+print(f"Generated video: {result['videos'][0]['url']}")
+```
+
+## Response Format
+
+```json
+{
+  "videos": [
+    {
+      "url": "https://blob.vercel-storage.com/...",
+      "duration": 5,
+      "width": 1920,
+      "height": 1088,
+      "content_type": "video/mp4"
+    }
+  ],
+  "seed": 123456789,
+  "timings": {
+    "inference": 15.2
+  }
+}
+```
+
+## Best Practices
+
+### Prompt Engineering for Video
+
+**Include motion and action:**
+- "A car driving down a winding road"
+- "Waves crashing on the shore"
+- "A bird flying through the sky"
+
+**Specify camera movement:**
+- "Smooth camera pan across the landscape"
+- "Drone shot flying over the city"
+- "Tracking shot following the subject"
+
+**Describe timing and pacing:**
+- "Slow motion water droplets falling"
+- "Fast-paced city traffic"
+- "Gentle floating motion"
+
+### Video Optimization
+
+1. **Keep prompts concise** but descriptive (under 200 characters recommended)
+2. **Specify duration** based on your needs (5s for social media, 10s for detailed scenes)
+3. **Choose aspect ratio** to match your platform (16:9 for YouTube, 9:16 for TikTok/Instagram)
+4. **Use seeds** for consistent variations
+
+## Pricing
+
+Video generation is billed per second of output. Contact us for detailed pricing based on your usage volume.
+
+## Current Limitations
+
+- Maximum duration: 10 seconds
+- Supported aspect ratios: 16:9 and 9:16
+- Videos are generated at 1080p resolution
+
+<Note>
+  Kling videos typically take 10-30 seconds to generate. Consider implementing async processing for better user experience.
+</Note>

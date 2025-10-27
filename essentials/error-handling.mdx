@@ -1,0 +1,425 @@
+---
+title: "Error Handling"
+description: "How to handle errors and edge cases in the Firemoon Studio API"
+---
+
+## Error Response Format
+
+All API errors follow a consistent format:
+
+```json
+{
+  "error": "ErrorType",
+  "message": "Human-readable error message",
+  "details": { /* optional additional information */ }
+}
+```
+
+## Common Error Codes
+
+### 400 Bad Request
+
+Invalid input parameters or malformed requests.
+
+```json
+{
+  "error": "Invalid input",
+  "message": "Input validation failed",
+  "errors": [
+    "Missing required field: prompt",
+    "Invalid value for image_size: must be one of [square_hd, ...]"
+  ]
+}
+```
+
+**Common causes:**
+- Missing required fields
+- Invalid parameter values
+- Malformed JSON
+- Unsupported image sizes or formats
+
+### 401 Unauthorized
+
+Invalid or missing API key.
+
+```json
+{
+  "error": "Invalid API key",
+  "message": "Please provide a valid API key in the Authorization header"
+}
+```
+
+**Common causes:**
+- Missing Authorization header
+- Invalid API key
+- Expired API key
+- Wrong header format (missing "Bearer " prefix)
+
+### 403 Forbidden
+
+API key doesn't have access to requested resource.
+
+```json
+{
+  "error": "Access denied",
+  "message": "Your API key does not have access to provider: kling"
+}
+```
+
+**Common causes:**
+- API key tier restrictions
+- Provider not available in your plan
+- Account suspended
+
+### 404 Not Found
+
+Requested resource doesn't exist.
+
+```json
+{
+  "error": "Model not found",
+  "message": "Model configuration not found for flux/invalid-model"
+}
+```
+
+**Common causes:**
+- Invalid provider name
+- Invalid model name
+- Typo in endpoint URL
+
+### 429 Too Many Requests
+
+Rate limit exceeded.
+
+```json
+{
+  "error": "Rate limit exceeded",
+  "message": "Rate limit exceeded. Try again in 45 seconds.",
+  "resetAt": "2025-10-23T10:30:00.000Z"
+}
+```
+
+**Common causes:**
+- Too many requests per minute
+- Daily/monthly quota exceeded
+
+### 500 Internal Server Error
+
+Server-side error.
+
+```json
+{
+  "error": "Generation failed",
+  "message": "Failed to generate image: timeout"
+}
+```
+
+**Common causes:**
+- Model inference timeout
+- Provider service unavailable
+- Internal system errors
+
+## Error Handling Patterns
+
+### JavaScript/TypeScript
+
+```javascript
+class FiremoonAPIError extends Error {
+  constructor(response) {
+    super(response.message);
+    this.name = 'FiremoonAPIError';
+    this.status = response.status;
+    this.error = response.error;
+    this.details = response.details;
+  }
+}
+
+async function generateImage(params) {
+  try {
+    const response = await fetch('/api/v1/flux/dev', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${process.env.FIREMOON_API_KEY}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(params)
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new FiremoonAPIError({
+        status: response.status,
+        ...errorData
+      });
+    }
+
+    return await response.json();
+  } catch (error) {
+    if (error instanceof FiremoonAPIError) {
+      // Handle API errors
+      switch (error.status) {
+        case 400:
+          console.error('Invalid request:', error.details);
+          // Fix input parameters
+          break;
+        case 401:
+          console.error('Authentication failed');
+          // Refresh API key or re-authenticate
+          break;
+        case 429:
+          console.error('Rate limited, retrying...');
+          // Implement backoff and retry
+          break;
+        case 500:
+          console.error('Server error:', error.message);
+          // Log for debugging, may be transient
+          break;
+        default:
+          console.error('Unexpected error:', error);
+      }
+    } else {
+      // Handle network errors
+      console.error('Network error:', error);
+    }
+    throw error;
+  }
+}
+```
+
+### Python
+
+```python
+import requests
+from requests.exceptions import RequestException, Timeout
+import time
+
+class FiremoonAPIError(Exception):
+    def __init__(self, response):
+        self.status_code = response.status_code
+        self.error = response.get('error')
+        self.message = response.get('message')
+        self.details = response.get('details')
+        super().__init__(self.message)
+
+def generate_image(params, max_retries=3):
+    url = 'https://firemoon.studio/api/v1/flux/dev'
+    headers = {
+        'Authorization': f'Bearer {os.getenv("FIREMOON_API_KEY")}',
+        'Content-Type': 'application/json'
+    }
+
+    for attempt in range(max_retries):
+        try:
+            response = requests.post(
+                url,
+                json=params,
+                headers=headers,
+                timeout=30
+            )
+
+            if response.status_code == 200:
+                return response.json()
+
+            # Handle specific error codes
+            if response.status_code == 429:
+                reset_time = response.headers.get('X-RateLimit-Reset')
+                wait_time = min(2 ** attempt, 30)  # Exponential backoff, max 30s
+                print(f"Rate limited. Waiting {wait_time}s...")
+                time.sleep(wait_time)
+                continue
+
+            # Raise custom error for other status codes
+            error_data = response.json()
+            raise FiremoonAPIError(error_data)
+
+        except Timeout:
+            print(f"Request timeout (attempt {attempt + 1}/{max_retries})")
+            if attempt == max_retries - 1:
+                raise
+            time.sleep(2 ** attempt)
+
+        except RequestException as e:
+            print(f"Network error (attempt {attempt + 1}/{max_retries}): {e}")
+            if attempt == max_retries - 1:
+                raise
+            time.sleep(2 ** attempt)
+
+    raise Exception("Max retries exceeded")
+```
+
+## Retry Logic
+
+### Exponential Backoff
+
+```javascript
+async function retryWithBackoff(fn, maxRetries = 3, baseDelay = 1000) {
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      return await fn();
+    } catch (error) {
+      if (error.status === 429 || error.status >= 500) {
+        const delay = baseDelay * Math.pow(2, attempt);
+        console.log(`Retrying in ${delay}ms...`);
+        await new Promise(resolve => setTimeout(resolve, delay));
+        continue;
+      }
+      throw error;
+    }
+  }
+  throw new Error('Max retries exceeded');
+}
+
+// Usage
+const result = await retryWithBackoff(() =>
+  generateImage({ prompt: 'A sunset' })
+);
+```
+
+### Circuit Breaker Pattern
+
+```javascript
+class CircuitBreaker {
+  constructor(failureThreshold = 5, recoveryTimeout = 60000) {
+    this.failureThreshold = failureThreshold;
+    this.recoveryTimeout = recoveryTimeout;
+    this.failureCount = 0;
+    this.lastFailureTime = null;
+    this.state = 'CLOSED'; // CLOSED, OPEN, HALF_OPEN
+  }
+
+  async execute(fn) {
+    if (this.state === 'OPEN') {
+      if (Date.now() - this.lastFailureTime > this.recoveryTimeout) {
+        this.state = 'HALF_OPEN';
+      } else {
+        throw new Error('Circuit breaker is OPEN');
+      }
+    }
+
+    try {
+      const result = await fn();
+      this.onSuccess();
+      return result;
+    } catch (error) {
+      this.onFailure();
+      throw error;
+    }
+  }
+
+  onSuccess() {
+    this.failureCount = 0;
+    this.state = 'CLOSED';
+  }
+
+  onFailure() {
+    this.failureCount++;
+    this.lastFailureTime = Date.now();
+
+    if (this.failureCount >= this.failureThreshold) {
+      this.state = 'OPEN';
+    }
+  }
+}
+
+// Usage
+const breaker = new CircuitBreaker();
+
+const result = await breaker.execute(() =>
+  generateImage({ prompt: 'A sunset' })
+);
+```
+
+## Validation
+
+### Input Validation
+
+```javascript
+function validateGenerationParams(params) {
+  const required = ['prompt'];
+  const missing = required.filter(field => !params[field]);
+
+  if (missing.length > 0) {
+    throw new Error(`Missing required fields: ${missing.join(', ')}`);
+  }
+
+  if (params.prompt && params.prompt.length > 1000) {
+    throw new Error('Prompt too long (max 1000 characters)');
+  }
+
+  if (params.num_images && (params.num_images < 1 || params.num_images > 4)) {
+    throw new Error('num_images must be between 1 and 4');
+  }
+
+  // Add more validation as needed
+}
+
+async function safeGenerateImage(params) {
+  validateGenerationParams(params);
+  return await generateImage(params);
+}
+```
+
+## Monitoring and Logging
+
+### Error Tracking
+
+```javascript
+class ErrorTracker {
+  constructor() {
+    this.errors = [];
+  }
+
+  track(error) {
+    this.errors.push({
+      timestamp: new Date(),
+      error: error.message,
+      status: error.status,
+      stack: error.stack
+    });
+
+    // Keep only last 100 errors
+    if (this.errors.length > 100) {
+      this.errors.shift();
+    }
+  }
+
+  getErrorStats() {
+    const now = Date.now();
+    const lastHour = this.errors.filter(e => now - e.timestamp < 3600000);
+
+    return {
+      total: this.errors.length,
+      lastHour: lastHour.length,
+      byStatus: lastHour.reduce((acc, e) => {
+        acc[e.status] = (acc[e.status] || 0) + 1;
+        return acc;
+      }, {})
+    };
+  }
+}
+
+// Usage
+const tracker = new ErrorTracker();
+
+try {
+  await generateImage({ prompt: 'A sunset' });
+} catch (error) {
+  tracker.track(error);
+  console.log('Error stats:', tracker.getErrorStats());
+}
+```
+
+## Best Practices
+
+1. **Always check response status** before processing
+2. **Implement proper retry logic** with exponential backoff
+3. **Validate input** before making requests
+4. **Log errors** for debugging and monitoring
+5. **Handle rate limits** gracefully
+6. **Use circuit breakers** for resilient error handling
+7. **Provide meaningful error messages** to users
+8. **Monitor error rates** and alert on anomalies
+
+<Note>
+  Most errors are transient and can be resolved with retries. Persistent errors may indicate API key issues or account problems.
+</Note>

@@ -1,0 +1,140 @@
+---
+title: "Providers Overview"
+description: "Learn about the AI providers supported by Firemoon Studio"
+---
+
+## Supported Providers
+
+Firemoon Studio integrates with leading AI model providers to give you access to the best image and video generation models in one unified API.
+
+## Provider Comparison
+
+| Provider | Type | Best For | Key Features |
+|----------|------|----------|--------------|
+| **FLUX** | Image | Fast, high-quality image generation | Sub-second inference, creative control |
+| **Ideogram** | Image | Character editing and styling | Precise edits, style consistency |
+| **Kling** | Video | Cinematic video generation | Professional quality, smooth motion |
+| **Minimax** | Multi-modal | Creative content | Advanced AI capabilities |
+| **Google Veo** | Video | High-quality video | Google's latest technology |
+| **Nano Banana** | Specialized | Unique applications | Experimental models |
+
+## FLUX
+
+The fastest image generation available with enhanced creative control.
+
+**Models:**
+- `dev` - Optimized for speed and quality
+
+**Use Cases:**
+- Rapid prototyping
+- Content creation workflows
+- Real-time applications
+
+**Example:**
+```javascript
+const result = await client.generate.image({
+  provider: 'flux',
+  model: 'dev',
+  prompt: 'A futuristic city skyline',
+  guidance_scale: 3.5
+});
+```
+
+## Ideogram
+
+Specialized in character consistency and precise editing capabilities.
+
+**Models:**
+- `v3-character-edit` - Advanced character editing
+
+**Use Cases:**
+- Character design
+- Product visualization
+- Brand consistency
+
+**Example:**
+```javascript
+const result = await client.generate.image({
+  provider: 'ideogram',
+  model: 'v3-character-edit',
+  prompt: 'Change the character's outfit to blue',
+  image_url: 'https://example.com/character.jpg'
+});
+```
+
+## Kling
+
+Professional video generation with cinematic quality.
+
+**Models:**
+- `kling-2-1-master` - Latest video generation
+
+**Use Cases:**
+- Marketing videos
+- Social media content
+- Storytelling
+
+**Example:**
+```javascript
+const result = await client.generate.video({
+  provider: 'kling',
+  model: 'kling-2-1-master',
+  prompt: 'A rocket launching into space',
+  duration: '5',
+  aspect_ratio: '16:9'
+});
+```
+
+## Minimax
+
+Advanced multimodal AI for creative applications.
+
+**Models:**
+- `hailuo-02` - General purpose creative AI
+
+**Use Cases:**
+- Complex creative tasks
+- Multimodal content
+- Advanced AI applications
+
+## Google Veo
+
+Google's cutting-edge video generation technology.
+
+**Models:**
+- `google-veo-3-fast` - Fast video generation
+
+**Use Cases:**
+- High-quality video production
+- Professional content
+- Research applications
+
+## Nano Banana
+
+Experimental and specialized models for unique applications.
+
+**Models:**
+- `nano-banan-edit` - Specialized editing
+
+**Use Cases:**
+- Experimental features
+- Niche applications
+- Advanced research
+
+## Choosing a Provider
+
+**For Speed:** Use FLUX for sub-second image generation.
+
+**For Quality:** Choose Ideogram for consistent character work or Kling for video.
+
+**For Scale:** All providers are optimized for production workloads.
+
+**For Experimentation:** Try Nano Banana for cutting-edge features.
+
+## Provider Availability
+
+All providers are available in our production API. Some experimental models may have limited availability during beta testing.
+
+<Note>
+  Provider availability and models may change. Check the [API status page](https://status.firemoon.studio) for current information.
+</Note>

@@ -1,80 +1,171 @@
 ---
 title: "Quickstart"
-description: "Start building awesome documentation in minutes"
+description: "Get started with the Firemoon Studio API in minutes"
 ---
 
 ## Get started in three steps
 
-Get your documentation site running locally and make your first customization.
+Generate your first AI image with the Firemoon Studio API.
 
-### Step 1: Set up your local environment
+### Step 1: Get your API key
 
 <AccordionGroup>
-  <Accordion icon="copy" title="Clone your docs locally">
-    During the onboarding process, you created a GitHub repository with your docs content if you didn't already have one. You can find a link to this repository in your [dashboard](https://dashboard.mintlify.com).
-    
-    To clone the repository locally so that you can make and preview changes to your docs, follow the [Cloning a repository](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository) guide in the GitHub docs.
+  <Accordion icon="key" title="Request API access">
+    Contact us to get your API key for the Firemoon Studio platform.
+
+    <Button href="mailto:contact@firemoon.studio">
+      Get API Key
+    </Button>
+
+    <Tip>Include your use case and expected usage volume for faster approval.</Tip>
   </Accordion>
-  <Accordion icon="rectangle-terminal" title="Start the preview server">
-    1. Install the Mintlify CLI: `npm i -g mint`
-    2. Navigate to your docs directory and run: `mint dev`
-    3. Open `http://localhost:3000` to see your docs live!
-    
-    <Tip>Your preview updates automatically as you edit files.</Tip>
+  <Accordion icon="shield" title="API key security">
+    Your API key provides access to generate content. Keep it secure:
+
+    - Store it as an environment variable
+    - Never commit it to version control
+    - Rotate keys regularly for security
+    - Monitor usage in your dashboard
   </Accordion>
 </AccordionGroup>
 
-### Step 2: Deploy your changes
+### Step 2: Make your first API call
 
 <AccordionGroup>
-  <Accordion icon="github" title="Install our GitHub app">
-    Install the Mintlify GitHub app from your [dashboard](https://dashboard.mintlify.com/settings/organization/github-app).
-    
-    Our GitHub app automatically deploys your changes to your docs site, so you don't need to manage deployments yourself.
-</Accordion>
-<Accordion icon="palette" title="Update your site name and colors">
-    For a first change, let's update the name and colors of your docs site.
+  <Accordion icon="code" title="Generate an image with FLUX">
+    Use this cURL command to generate your first image:
 
-    1. Open `docs.json` in your editor.
-    2. Change the `"name"` field to your project name.
-    3. Update the `"colors"` to match your brand.
-    4. Save and see your changes instantly at `http://localhost:3000`.
+    ```bash
+    curl -X POST https://firemoon.studio/api/v1/flux/dev \
+      -H "Authorization: Bearer YOUR_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "prompt": "A beautiful sunset over mountains",
+        "num_images": 1,
+        "image_size": "landscape_4_3",
+        "guidance_scale": 3.5
+      }'
+    ```
 
-    <Tip>Try changing the primary color to see an immediate difference!</Tip>
+    <Tip>Replace `YOUR_API_KEY` with the key you received from us.</Tip>
+  </Accordion>
+  <Accordion icon="video" title="Generate a video with Kling">
+    Create a short video with our Kling integration:
+
+    ```bash
+    curl -X POST https://firemoon.studio/api/v1/kling/kling-2-1-master \
+      -H "Authorization: Bearer YOUR_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "prompt": "A butterfly emerging from its chrysalis",
+        "duration": "5",
+        "aspect_ratio": "16:9"
+      }'
+    ```
   </Accordion>
 </AccordionGroup>
 
-### Step 3: Go live
+### Step 3: Integrate into your application
 
-<Accordion icon="rocket" title="Publish your docs">
-  1. Commit and push your changes.
-  2. Your docs will update and be live in moments!
-</Accordion>
+<AccordionGroup>
+  <Accordion icon="js" title="JavaScript/Node.js">
+    Install our SDK and start generating:
+
+    ```javascript
+    // Install: npm install @firemoon-studio/sdk
+    import { FiremoonStudio } from '@firemoon-studio/sdk';
+
+    const client = new FiremoonStudio({
+      apiKey: process.env.FIREMOON_API_KEY
+    });
+
+    const result = await client.generate.image({
+      provider: 'flux',
+      model: 'dev',
+      prompt: 'A serene mountain landscape',
+      num_images: 1
+    });
+
+    console.log('Generated image:', result.images[0].url);
+    ```
+  </Accordion>
+  <Accordion icon="python" title="Python">
+    Use our Python client library:
+
+    ```python
+    # Install: pip install firemoon-studio
+    from firemoon_studio import FiremoonStudio
+
+    client = FiremoonStudio(api_key=os.getenv('FIREMOON_API_KEY'))
+
+    result = client.generate.image(
+        provider='flux',
+        model='dev',
+        prompt='A beautiful ocean sunset',
+        num_images=1
+    )
+
+    print(f"Generated image: {result['images'][0]['url']}")
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Response format
+
+All generation endpoints return a consistent response:
+
+```json
+{
+  "images": [
+    {
+      "url": "https://blob.vercel-storage.com/...",
+      "width": 1024,
+      "height": 768,
+      "content_type": "image/jpeg"
+    }
+  ],
+  "seed": 123456789,
+  "has_nsfw_concepts": [false],
+  "timings": {
+    "inference": 2.5
+  }
+}
+```
+
+## Rate limits & pricing
+
+- **Free tier**: 100 requests/day
+- **Pro tier**: 10,000 requests/month
+- **Enterprise**: Custom limits available
+
+<Note>
+  Rate limit information is included in response headers. See our [rate limiting guide](/essentials/rate-limits) for details.
+</Note>
 
 ## Next steps
 
-Now that you have your docs running, explore these key features:
+Now that you've made your first API call, explore:
 
 <CardGroup cols={2}>
 
-<Card title="Write Content" icon="pen-to-square" href="/essentials/markdown">
-  Learn MDX syntax and start writing your documentation.
+<Card title="API Reference" icon="terminal" href="/api-reference/overview">
+  Complete API documentation with all endpoints.
 </Card>
 
-<Card title="Customize style" icon="palette" href="/essentials/settings">
-  Make your docs match your brand perfectly.
+<Card title="Provider Guides" icon="layers" href="/providers/overview">
+  Learn about FLUX, Ideogram, Kling, and other providers.
 </Card>
 
-<Card title="Add code examples" icon="square-code" href="/essentials/code">
-  Include syntax-highlighted code blocks.
+<Card title="Authentication" icon="shield" href="/essentials/authentication">
+  Best practices for API key management.
 </Card>
 
-<Card title="API documentation" icon="code" href="/api-reference/introduction">
-  Auto-generate API docs from OpenAPI specs.
+<Card title="Error Handling" icon="alert-triangle" href="/essentials/error-handling">
+  Handle errors and edge cases gracefully.
 </Card>
 
 </CardGroup>
 
-<Note>
-  **Need help?** See our [full documentation](https://mintlify.com/docs) or join our [community](https://mintlify.com/community).
-</Note>
+<Warning>
+  **Need help?** Contact us at [contact@firemoon.studio](mailto:contact@firemoon.studio) or join our [Discord community](https://discord.gg/firemoon).
+</Warning>

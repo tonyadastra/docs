@@ -1,11 +1,11 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
-  "name": "Mint Starter Kit",
+  "name": "Firemoon Studio",
   "colors": {
-    "primary": "#16A34A",
-    "light": "#07C983",
-    "dark": "#15803D"
+    "primary": "#ea580c",
+    "light": "#fb923c",
+    "dark": "#c2410c"
   },
   "favicon": "/favicon.svg",
   "navigation": {
@@ -17,32 +17,27 @@
             "group": "Getting started",
             "pages": [
               "index",
-              "quickstart",
-              "development"
+              "quickstart"
             ]
           },
           {
-            "group": "Customization",
+            "group": "API fundamentals",
             "pages": [
-              "essentials/settings",
-              "essentials/navigation"
+              "essentials/authentication",
+              "essentials/rate-limits",
+              "essentials/error-handling"
             ]
           },
           {
-            "group": "Writing content",
+            "group": "Providers & Models",
             "pages": [
-              "essentials/markdown",
-              "essentials/code",
-              "essentials/images",
-              "essentials/reusable-snippets"
-            ]
-          },
-          {
-            "group": "AI tools",
-            "pages": [
-              "ai-tools/cursor",
-              "ai-tools/claude-code",
-              "ai-tools/windsurf"
+              "providers/overview",
+              "providers/flux",
+              "providers/ideogram",
+              "providers/kling",
+              "providers/minimax",
+              "providers/google",
+              "providers/nano-banana"
             ]
           }
         ]
@@ -51,18 +46,27 @@
         "tab": "API reference",
         "groups": [
           {
-            "group": "API documentation",
+            "group": "Core endpoints",
             "pages": [
-              "api-reference/introduction"
+              "api-reference/overview",
+              "api-reference/providers",
+              "api-reference/models"
             ]
           },
           {
-            "group": "Endpoint examples",
+            "group": "Generation endpoints",
             "pages": [
-              "api-reference/endpoint/get",
-              "api-reference/endpoint/create",
-              "api-reference/endpoint/delete",
-              "api-reference/endpoint/webhook"
+              "api-reference/generate",
+              "api-reference/status",
+              "api-reference/webhook"
+            ]
+          },
+          {
+            "group": "Code examples",
+            "pages": [
+              "api-reference/examples/javascript",
+              "api-reference/examples/python",
+              "api-reference/examples/curl"
             ]
           }
         ]
@@ -71,14 +75,19 @@
     "global": {
       "anchors": [
         {
-          "anchor": "Documentation",
-          "href": "https://mintlify.com/docs",
-          "icon": "book-open-cover"
+          "anchor": "Studio",
+          "href": "https://firemoon.studio",
+          "icon": "zap"
         },
         {
-          "anchor": "Blog",
-          "href": "https://mintlify.com/blog",
-          "icon": "newspaper"
+          "anchor": "GitHub",
+          "href": "https://github.com/firemoon-studio",
+          "icon": "github"
+        },
+        {
+          "anchor": "Discord",
+          "href": "https://discord.gg/firemoon",
+          "icon": "message-circle"
         }
       ]
     }
@@ -90,33 +99,41 @@
   "navbar": {
     "links": [
       {
+        "label": "Models",
+        "href": "https://firemoon.studio/models"
+      },
+      {
+        "label": "Pricing",
+        "href": "https://firemoon.studio/pricing"
+      },
+      {
         "label": "Support",
-        "href": "mailto:hi@mintlify.com"
+        "href": "mailto:contact@firemoon.studio"
       }
     ],
     "primary": {
       "type": "button",
-      "label": "Dashboard",
-      "href": "https://dashboard.mintlify.com"
+      "label": "Get Started",
+      "href": "mailto:contact@firemoon.studio"
     }
   },
   "contextual": {
     "options": [
-     "copy",
-     "view",
-     "chatgpt",
-     "claude",
-     "perplexity",
-     "mcp",
-     "cursor",
-     "vscode"
-   ]
+      "copy",
+      "view",
+      "chatgpt",
+      "claude",
+      "perplexity",
+      "mcp",
+      "cursor",
+      "vscode"
+    ]
   },
   "footer": {
     "socials": {
-      "x": "https://x.com/mintlify",
-      "github": "https://github.com/mintlify",
-      "linkedin": "https://linkedin.com/company/mintlify"
+      "x": "https://x.com/firemoonstudio",
+      "github": "https://github.com/firemoon-studio",
+      "linkedin": "https://linkedin.com/company/firemoon-studio"
     }
   }
 }

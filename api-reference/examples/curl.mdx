@@ -1,0 +1,355 @@
+---
+title: "cURL Examples"
+description: "Command-line examples for testing the Firemoon Studio API"
+---
+
+## Basic Image Generation
+
+### FLUX/dev - Simple Generation
+
+```bash
+curl -X POST https://firemoon.studio/api/v1/flux/dev \
+  -H "Authorization: Bearer your_api_key_here" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "prompt": "A beautiful sunset over mountains"
+  }'
+```
+
+### FLUX/dev - Advanced Parameters
+
+```bash
+curl -X POST https://firemoon.studio/api/v1/flux/dev \
+  -H "Authorization: Bearer your_api_key_here" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "prompt": "A futuristic city with flying cars, cyberpunk style, highly detailed",
+    "num_images": 2,
+    "image_size": "landscape_16_9",
+    "guidance_scale": 7.5,
+    "num_inference_steps": 35,
+    "seed": 12345
+  }'
+```
+
+## Video Generation
+
+### Kling - Basic Video
+
+```bash
+curl -X POST https://firemoon.studio/api/v1/kling/kling-2-1-master \
+  -H "Authorization: Bearer your_api_key_here" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "prompt": "A butterfly emerging from its chrysalis and flying away",
+    "duration": "5",
+    "aspect_ratio": "16:9"
+  }'
+```
+
+### Kling - Marketing Video
+
+```bash
+curl -X POST https://firemoon.studio/api/v1/kling/kling-2-1-master \
+  -H "Authorization: Bearer your_api_key_here" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "prompt": "A sleek electric car driving through a futuristic city at sunset, smooth camera movement following the vehicle",
+    "duration": "10",
+    "aspect_ratio": "16:9",
+    "seed": 42
+  }'
+```
+
+## Character Editing
+
+### Ideogram - Character Edit
+
+```bash
+curl -X POST https://firemoon.studio/api/v1/ideogram/v3-character-edit \
+  -H "Authorization: Bearer your_api_key_here" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "prompt": "Change the character to wear a blue jacket and sunglasses",
+    "image_url": "https://example.com/character.jpg",
+    "style": "realistic",
+    "magic_prompt_option": "auto"
+  }'
+```
+
+## API Information
+
+### Get API Version
+
+```bash
+curl https://firemoon.studio/api/v1
+```
+
+### List Providers
+
+```bash
+curl https://firemoon.studio/api/v1/providers
+```
+
+### List Models for Provider
+
+```bash
+# FLUX models
+curl https://firemoon.studio/api/v1/providers/flux/models
+
+# Ideogram models
+curl https://firemoon.studio/api/v1/providers/ideogram/models
+
+# Kling models
+curl https://firemoon.studio/api/v1/providers/kling/models
+```
+
+### Get Model Information
+
+```bash
+# FLUX/dev info
+curl https://firemoon.studio/api/v1/flux/dev
+
+# Kling video info
+curl https://firemoon.studio/api/v1/kling/kling-2-1-master
+```
+
+## Testing Scripts
+
+### Batch Image Generation
+
+```bash
+#!/bin/bash
+
+# Set your API key
+API_KEY="your_api_key_here"
+BASE_URL="https://firemoon.studio/api/v1"
+
+# Array of prompts
+prompts=(
+    "A serene mountain landscape at sunset"
+    "A futuristic city skyline with neon lights"
+    "A peaceful lake surrounded by autumn trees"
+    "A rocket launching into space"
+    "A butterfly resting on a flower petal"
+)
+
+echo "Generating images..."
+
+for i in "${!prompts[@]}"; do
+    prompt="${prompts[$i]}"
+    echo "Generating image $((i+1))/${#prompts[@]}: $prompt"
+
+    curl -X POST "$BASE_URL/flux/dev" \
+      -H "Authorization: Bearer $API_KEY" \
+      -H "Content-Type: application/json" \
+      -d "{\"prompt\": \"$prompt\", \"num_images\": 1}" \
+      --silent | jq '.images[0].url' 2>/dev/null || echo "Failed to generate"
+
+    # Small delay to be respectful
+    sleep 1
+done
+
+echo "Batch generation complete!"
+```
+
+### Test All Providers
+
+```bash
+#!/bin/bash
+
+API_KEY="your_api_key_here"
+BASE_URL="https://firemoon.studio/api/v1"
+
+echo "Testing FLUX image generation..."
+curl -X POST "$BASE_URL/flux/dev" \
+  -H "Authorization: Bearer $API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"prompt": "A test image", "num_images": 1}' \
+  -w "\nStatus: %{http_code}\nTime: %{time_total}s\n"
+
+echo -e "\nTesting Kling video generation..."
+curl -X POST "$BASE_URL/kling/kling-2-1-master" \
+  -H "Authorization: Bearer $API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"prompt": "A test video", "duration": "5"}' \
+  -w "\nStatus: %{http_code}\nTime: %{time_total}s\n"
+
+echo -e "\nTesting API info..."
+curl "$BASE_URL" -w "\nStatus: %{http_code}\n"
+
+echo -e "\nTesting providers list..."
+curl "$BASE_URL/providers" -w "\nStatus: %{http_code}\n"
+```
+
+### Rate Limit Testing
+
+```bash
+#!/bin/bash
+
+API_KEY="your_api_key_here"
+BASE_URL="https://firemoon.studio/api/v1"
+
+echo "Testing rate limits..."
+
+for i in {1..10}; do
+    echo "Request $i:"
+    curl -X POST "$BASE_URL/flux/dev" \
+      -H "Authorization: Bearer $API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"prompt": "Rate limit test", "num_images": 1}' \
+      --silent \
+      -w "Status: %{http_code}, Remaining: %{header:X-RateLimit-Remaining}\n" \
+      -o /dev/null
+
+    sleep 0.5  # Small delay between requests
+done
+```
+
+### Error Testing
+
+```bash
+#!/bin/bash
+
+API_KEY="your_api_key_here"
+BASE_URL="https://firemoon.studio/api/v1"
+
+echo "Testing error responses..."
+
+# Invalid API key
+echo "1. Invalid API key:"
+curl -X POST "$BASE_URL/flux/dev" \
+  -H "Authorization: Bearer invalid_key" \
+  -H "Content-Type: application/json" \
+  -d '{"prompt": "Test"}' \
+  -w "\nStatus: %{http_code}\n"
+
+# Missing prompt
+echo -e "\n2. Missing prompt:"
+curl -X POST "$BASE_URL/flux/dev" \
+  -H "Authorization: Bearer $API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{}' \
+  -w "\nStatus: %{http_code}\n"
+
+# Invalid provider
+echo -e "\n3. Invalid provider:"
+curl -X POST "$BASE_URL/invalid-provider/model" \
+  -H "Authorization: Bearer $API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"prompt": "Test"}' \
+  -w "\nStatus: %{http_code}\n"
+
+# Invalid model
+echo -e "\n4. Invalid model:"
+curl -X POST "$BASE_URL/flux/invalid-model" \
+  -H "Authorization: Bearer $API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"prompt": "Test"}' \
+  -w "\nStatus: %{http_code}\n"
+```
+
+## Response Parsing
+
+### Extract Image URLs
+
+```bash
+# Generate image and extract URL
+curl -X POST https://firemoon.studio/api/v1/flux/dev \
+  -H "Authorization: Bearer your_api_key_here" \
+  -H "Content-Type: application/json" \
+  -d '{"prompt": "A sunset"}' \
+  | jq -r '.images[0].url'
+```
+
+### Pretty Print Response
+
+```bash
+# Pretty print JSON response
+curl -X POST https://firemoon.studio/api/v1/flux/dev \
+  -H "Authorization: Bearer your_api_key_here" \
+  -H "Content-Type: application/json" \
+  -d '{"prompt": "A sunset"}' \
+  | jq '.'
+```
+
+### Check Rate Limits
+
+```bash
+# Show rate limit headers
+curl -X POST https://firemoon.studio/api/v1/flux/dev \
+  -H "Authorization: Bearer your_api_key_here" \
+  -H "Content-Type: application/json" \
+  -d '{"prompt": "A sunset"}' \
+  -I | grep -i rate-limit
+```
+
+## Automation Scripts
+
+### Generate and Download Images
+
+```bash
+#!/bin/bash
+
+API_KEY="your_api_key_here"
+BASE_URL="https://firemoon.studio/api/v1"
+PROMPT="A beautiful landscape"
+OUTPUT_DIR="./generated_images"
+
+mkdir -p "$OUTPUT_DIR"
+
+echo "Generating image..."
+response=$(curl -s -X POST "$BASE_URL/flux/dev" \
+  -H "Authorization: Bearer $API_KEY" \
+  -H "Content-Type: application/json" \
+  -d "{\"prompt\": \"$PROMPT\", \"num_images\": 1}")
+
+image_url=$(echo "$response" | jq -r '.images[0].url')
+
+if [ "$image_url" != "null" ] && [ -n "$image_url" ]; then
+    echo "Downloading image from: $image_url"
+    filename="$OUTPUT_DIR/$(basename "$image_url")"
+    curl -s "$image_url" -o "$filename"
+    echo "Saved to: $filename"
+else
+    echo "Failed to generate image"
+    echo "Response: $response"
+fi
+```
+
+### Monitor API Usage
+
+```bash
+#!/bin/bash
+
+API_KEY="your_api_key_here"
+BASE_URL="https://firemoon.studio/api/v1"
+LOG_FILE="api_usage.log"
+
+echo "$(date): Starting API usage monitoring" >> "$LOG_FILE"
+
+while true; do
+    # Make a test request to check rate limits
+    response=$(curl -s -w "%{http_code}" -X POST "$BASE_URL/flux/dev" \
+      -H "Authorization: Bearer $API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"prompt": "Usage monitoring", "num_images": 1}' \
+      -D /tmp/headers.txt)
+
+    status_code=$(tail -n1 /tmp/headers.txt | cut -d' ' -f2)
+    remaining=$(grep -i "X-RateLimit-Remaining" /tmp/headers.txt | cut -d' ' -f2)
+
+    echo "$(date): Status $status_code, Remaining $remaining" >> "$LOG_FILE"
+
+    if [ "$remaining" -lt 10 ]; then
+        echo "$(date): WARNING: Only $remaining requests remaining!" >> "$LOG_FILE"
+    fi
+
+    # Check every 30 seconds
+    sleep 30
+done
+```
+
+<Note>
+  These cURL examples are perfect for testing the API, debugging issues, and integrating into scripts or automation workflows.
+</Note>

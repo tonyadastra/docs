@@ -1,0 +1,222 @@
+---
+title: "FLUX Provider"
+description: "Fast, high-quality image generation with FLUX models"
+---
+
+## Overview
+
+FLUX is our fastest image generation provider, optimized for speed and creative control. It delivers sub-second inference times while maintaining high image quality.
+
+## Available Models
+
+### FLUX/dev
+
+The primary FLUX model optimized for both speed and quality.
+
+**Endpoint:** `POST /api/v1/flux/dev`
+
+**Best for:**
+- Rapid prototyping
+- Content creation workflows
+- Real-time applications
+- High-volume generation
+
+**Performance:**
+- **Inference time:** ~0.5-2 seconds
+- **Quality:** High
+- **Cost:** Low
+
+## Parameters
+
+### Required Parameters
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `prompt` | string | Text description of the image to generate (max 1000 characters) |
+
+### Optional Parameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `num_images` | number | 1 | Number of images to generate (1-4) |
+| `image_size` | string | "landscape_4_3" | Image dimensions |
+| `guidance_scale` | number | 3.5 | How closely to follow the prompt (1-20) |
+| `num_inference_steps` | number | 28 | Number of denoising steps (1-50) |
+| `seed` | number | random | Random seed for reproducible results |
+
+### Image Sizes
+
+| Size | Dimensions | Aspect Ratio |
+|------|------------|---------------|
+| `square_hd` | 1024×1024 | 1:1 |
+| `square` | 512×512 | 1:1 |
+| `portrait_4_3` | 768×1024 | 3:4 |
+| `portrait_16_9` | 576×1024 | 9:16 |
+| `landscape_4_3` | 1024×768 | 4:3 |
+| `landscape_16_9` | 1024×576 | 16:9 |
+
+## Examples
+
+### Basic Image Generation
+
+```javascript
+const response = await fetch('/api/v1/flux/dev', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer your_api_key',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    prompt: 'A serene mountain landscape at sunset',
+    num_images: 1,
+    image_size: 'landscape_16_9'
+  })
+});
+
+const result = await response.json();
+console.log('Image URL:', result.images[0].url);
+```
+
+### Advanced Generation with Control
+
+```javascript
+const response = await fetch('/api/v1/flux/dev', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer your_api_key',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    prompt: 'A futuristic city with flying cars, cyberpunk style, highly detailed',
+    num_images: 2,
+    image_size: 'landscape_16_9',
+    guidance_scale: 7.5, // More creative control
+    num_inference_steps: 35, // Higher quality
+    seed: 12345 // Reproducible results
+  })
+});
+
+const result = await response.json();
+result.images.forEach((image, index) => {
+  console.log(`Image ${index + 1}:`, image.url);
+});
+```
+
+### Python Example
+
+```python
+import requests
+
+def generate_flux_image(prompt, **kwargs):
+    response = requests.post(
+        'https://firemoon.studio/api/v1/flux/dev',
+        headers={
+            'Authorization': 'Bearer your_api_key',
+            'Content-Type': 'application/json'
+        },
+        json={
+            'prompt': prompt,
+            'num_images': kwargs.get('num_images', 1),
+            'image_size': kwargs.get('image_size', 'landscape_4_3'),
+            'guidance_scale': kwargs.get('guidance_scale', 3.5),
+            **kwargs
+        }
+    )
+
+    response.raise_for_status()
+    return response.json()
+
+# Usage
+result = generate_flux_image(
+    'A beautiful underwater scene with coral reefs',
+    num_images=2,
+    guidance_scale=5.0
+)
+
+for image in result['images']:
+    print(f"Generated image: {image['url']}")
+```
+
+### cURL Example
+
+```bash
+curl -X POST https://firemoon.studio/api/v1/flux/dev \
+  -H "Authorization: Bearer your_api_key" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "prompt": "A majestic eagle soaring over mountains",
+    "num_images": 1,
+    "image_size": "landscape_16_9",
+    "guidance_scale": 4.0,
+    "seed": 42
+  }'
+```
+
+## Best Practices
+
+### Prompt Engineering
+
+**Do:**
+- Be specific and descriptive
+- Include style references (e.g., "in the style of impressionist painting")
+- Mention lighting and mood
+- Specify composition elements
+
+**Don't:**
+- Use negative prompts (not supported)
+- Be too vague or abstract
+- Include copyrighted character names
+
+### Performance Optimization
+
+1. **Use lower guidance_scale** for faster generation
+2. **Reduce num_inference_steps** for speed over quality
+3. **Generate multiple images** in one request instead of separate calls
+4. **Cache successful seeds** for reproducible variations
+
+### Quality vs Speed Trade-offs
+
+| Use Case | guidance_scale | num_inference_steps | Expected Time |
+|----------|----------------|-------------------|----------------|
+| Fast draft | 2.0-3.0 | 20-25 | 0.5-1.0s |
+| Balanced | 3.5-5.0 | 25-30 | 1.0-1.5s |
+| High quality | 5.0-7.5 | 30-40 | 1.5-2.5s |
+| Maximum quality | 7.5+ | 40-50 | 2.5-4.0s |
+
+## Response Format
+
+```json
+{
+  "images": [
+    {
+      "url": "https://blob.vercel-storage.com/...",
+      "width": 1024,
+      "height": 768,
+      "content_type": "image/jpeg"
+    }
+  ],
+  "seed": 123456789,
+  "has_nsfw_concepts": [false],
+  "timings": {
+    "inference": 1.2
+  }
+}
+```
+
+## Error Handling
+
+FLUX is generally very reliable, but you may encounter:
+
+- **400 Bad Request**: Invalid parameters or prompt too long
+- **429 Too Many Requests**: Rate limit exceeded
+- **500 Internal Server Error**: Rare inference failures
+
+Implement proper retry logic for 500 errors and backoff for 429 errors.
+
+## Pricing
+
+FLUX images are billed at our standard image generation rate. Contact us for volume pricing.
+
+<Note>
+  FLUX/dev is our recommended model for most use cases due to its excellent balance of speed, quality, and cost.
+</Note>
