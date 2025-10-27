@@ -9,11 +9,11 @@ Nano Banana offers experimental and specialized AI models for cutting-edge creat
 
 ## Available Models
 
-### nano-banan-edit
+### edit
 
 Experimental editing model with unique capabilities for specialized creative tasks.
 
-**Endpoint:** `POST /api/v1/nano-banana/nano-banan-edit`
+**Endpoint:** `POST /api/v1/nano-banana/edit`
 
 **Best for:**
 - Experimental creative workflows
@@ -48,7 +48,7 @@ Experimental editing model with unique capabilities for specialized creative tas
 ### Experimental Generation
 
 ```javascript
-const response = await fetch('/api/v1/nano-banana/nano-banan-edit', {
+const response = await fetch('/api/v1/nano-banana/edit', {
   method: 'POST',
   headers: {
     'Authorization': 'Bearer your_api_key',
@@ -69,7 +69,7 @@ console.log('Experimental result:', result.images[0].url);
 ### Research Application
 
 ```javascript
-const response = await fetch('/api/v1/nano-banana/nano-banan-edit', {
+const response = await fetch('/api/v1/nano-banana/edit', {
   method: 'POST',
   headers: {
     'Authorization': 'Bearer your_api_key',
@@ -94,7 +94,7 @@ import requests
 
 def generate_nano_banana(prompt, **kwargs):
     response = requests.post(
-        'https://firemoon.studio/api/v1/nano-banana/nano-banan-edit',
+        'https://firemoon.studio/api/v1/nano-banana/edit',
         headers={
             'Authorization': 'Bearer your_api_key',
             'Content-Type': 'application/json'
