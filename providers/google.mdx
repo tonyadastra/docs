@@ -1,0 +1,175 @@
+---
+title: "Google Provider"
+description: "Google's latest video generation technology"
+---
+
+## Overview
+
+Access Google's cutting-edge video generation models, featuring their latest advancements in AI-powered video creation with professional quality and smooth motion.
+
+## Available Models
+
+### google-veo-3-fast
+
+Google's fast video generation model optimized for speed and quality.
+
+**Endpoint:** `POST /api/v1/google/google-veo-3-fast`
+
+**Best for:**
+- Professional video content
+- Marketing and advertising
+- Social media videos
+- High-quality video production
+
+**Performance:**
+- **Inference time:** 15-25 seconds
+- **Quality:** Professional cinematic
+- **Cost:** Medium-High
+
+## Parameters
+
+### Required Parameters
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `prompt` | string | Description of the video scene and action |
+
+### Optional Parameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `duration` | string | "5" | Video duration in seconds ("5" or "10") |
+| `aspect_ratio` | string | "16:9" | Video aspect ratio ("16:9" or "9:16") |
+| `style` | string | "cinematic" | Visual style preference |
+| `seed` | number | random | Random seed for reproducible results |
+
+## Examples
+
+### Professional Video Content
+
+```javascript
+const response = await fetch('/api/v1/google/google-veo-3-fast', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer your_api_key',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    prompt: 'A luxury car driving through a mountain pass at sunset with dramatic lighting',
+    duration: '10',
+    aspect_ratio: '16:9',
+    style: 'cinematic'
+  })
+});
+
+const result = await response.json();
+console.log('Generated video:', result.videos[0].url);
+```
+
+### Social Media Content
+
+```javascript
+const response = await fetch('/api/v1/google/google-veo-3-fast', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer your_api_key',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    prompt: 'Coffee beans falling into a cup forming a heart shape, slow motion',
+    duration: '5',
+    aspect_ratio: '9:16',
+    style: 'vibrant'
+  })
+});
+
+const result = await response.json();
+console.log('Social video:', result.videos[0].url);
+```
+
+### Python Example
+
+```python
+import requests
+
+def generate_google_video(prompt, **kwargs):
+    response = requests.post(
+        'https://firemoon.studio/api/v1/google/google-veo-3-fast',
+        headers={
+            'Authorization': 'Bearer your_api_key',
+            'Content-Type': 'application/json'
+        },
+        json={
+            'prompt': prompt,
+            'duration': kwargs.get('duration', '5'),
+            'aspect_ratio': kwargs.get('aspect_ratio', '16:9'),
+            'style': kwargs.get('style', 'cinematic'),
+            **kwargs
+        }
+    )
+
+    response.raise_for_status()
+    return response.json()
+
+# Usage
+result = generate_google_video(
+    'A drone flying over a futuristic city at dawn',
+    duration='10',
+    style='epic'
+)
+
+print(f"Generated video: {result['videos'][0]['url']}")
+```
+
+## Response Format
+
+```json
+{
+  "videos": [
+    {
+      "url": "https://blob.vercel-storage.com/...",
+      "duration": 5,
+      "width": 1920,
+      "height": 1088,
+      "content_type": "video/mp4"
+    }
+  ],
+  "seed": 123456789,
+  "timings": {
+    "inference": 18.7
+  }
+}
+```
+
+## Best Practices
+
+### Professional Video Prompts
+
+**Specify camera techniques:**
+- "Slow motion footage of water droplets"
+- "Tracking shot following the subject"
+- "Aerial view of the landscape"
+
+**Include lighting and mood:**
+- "Golden hour lighting with warm tones"
+- "Dramatic shadows and highlights"
+- "Soft, diffused lighting"
+
+**Describe motion and pacing:**
+- "Smooth, fluid camera movement"
+- "Dynamic action sequences"
+- "Gentle, contemplative pacing"
+
+### Content Guidelines
+
+- Focus on creative, non-violent content
+- Avoid copyrighted characters or brands
+- Ensure prompts are appropriate for professional use
+
+## Pricing
+
+Google video generation is billed per second of output at a premium rate. Contact us for volume pricing.
+
+<Note>
+  Google's video generation technology delivers professional-quality results with excellent motion smoothness and cinematic capabilities.
+</Note>

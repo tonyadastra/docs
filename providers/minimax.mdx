@@ -1,0 +1,147 @@
+---
+title: "MiniMax Provider"
+description: "Advanced multimodal AI for creative content generation"
+---
+
+## Overview
+
+MiniMax provides advanced multimodal AI capabilities for complex creative tasks, combining text, image, and other modalities for sophisticated content generation.
+
+## Available Models
+
+### hailuo-02
+
+The latest multimodal model from MiniMax, capable of advanced creative tasks and content generation.
+
+**Endpoint:** `POST /api/v1/minimax/hailuo-02`
+
+**Best for:**
+- Complex creative workflows
+- Multimodal content generation
+- Advanced AI applications
+- Research and experimentation
+
+**Performance:**
+- **Inference time:** 10-20 seconds
+- **Quality:** High versatility
+- **Cost:** Medium-High
+
+## Parameters
+
+### Required Parameters
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `prompt` | string | Detailed description of the desired output |
+
+### Optional Parameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `aspect_ratio` | string | "1:1" | Output aspect ratio |
+| `style` | string | "auto" | Generation style preference |
+| `quality` | string | "standard" | Quality level: "standard", "high" |
+| `seed` | number | random | Random seed for reproducible results |
+
+## Examples
+
+### Creative Content Generation
+
+```javascript
+const response = await fetch('/api/v1/minimax/hailuo-02', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer your_api_key',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    prompt: 'A surreal landscape where trees grow musical instruments instead of leaves',
+    aspect_ratio: '16:9',
+    style: 'artistic',
+    quality: 'high'
+  })
+});
+
+const result = await response.json();
+console.log('Generated image:', result.images[0].url);
+```
+
+### Python Example
+
+```python
+import requests
+
+def generate_with_minimax(prompt, **kwargs):
+    response = requests.post(
+        'https://firemoon.studio/api/v1/minimax/hailuo-02',
+        headers={
+            'Authorization': 'Bearer your_api_key',
+            'Content-Type': 'application/json'
+        },
+        json={
+            'prompt': prompt,
+            'aspect_ratio': kwargs.get('aspect_ratio', '1:1'),
+            'style': kwargs.get('style', 'auto'),
+            'quality': kwargs.get('quality', 'standard'),
+            **kwargs
+        }
+    )
+
+    response.raise_for_status()
+    return response.json()
+
+# Usage
+result = generate_with_minimax(
+    'An abstract representation of artificial intelligence as a cosmic entity',
+    aspect_ratio='4:3',
+    quality='high'
+)
+
+print(f"Generated image: {result['images'][0]['url']}")
+```
+
+## Response Format
+
+```json
+{
+  "images": [
+    {
+      "url": "https://blob.vercel-storage.com/...",
+      "width": 1024,
+      "height": 1024,
+      "content_type": "image/jpeg"
+    }
+  ],
+  "seed": 123456789,
+  "timings": {
+    "inference": 12.3
+  }
+}
+```
+
+## Best Practices
+
+### Advanced Prompt Engineering
+
+**Leverage multimodal thinking:**
+- "Combine elements of steampunk machinery with natural landscapes"
+- "A portrait that blends human features with architectural elements"
+
+**Specify complexity levels:**
+- "Highly detailed and intricate design"
+- "Minimalist composition with deep symbolic meaning"
+
+### Use Cases
+
+- **Artistic Exploration**: Experimental and avant-garde content
+- **Brand Innovation**: Unique visual identities
+- **Research**: Testing novel AI capabilities
+- **Creative Direction**: Complex visual concepts
+
+## Pricing
+
+MiniMax generation is billed at a premium rate due to its advanced capabilities. Contact us for detailed pricing.
+
+<Note>
+  MiniMax is designed for sophisticated creative workflows and experimental applications. For simpler tasks, consider FLUX or Ideogram first.
+</Note>

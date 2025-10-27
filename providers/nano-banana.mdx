@@ -1,0 +1,190 @@
+---
+title: "Nano Banana Provider"
+description: "Experimental and specialized models for unique creative applications"
+---
+
+## Overview
+
+Nano Banana offers experimental and specialized AI models for cutting-edge creative applications, research, and unique use cases that require specialized capabilities.
+
+## Available Models
+
+### nano-banan-edit
+
+Experimental editing model with unique capabilities for specialized creative tasks.
+
+**Endpoint:** `POST /api/v1/nano-banana/nano-banan-edit`
+
+**Best for:**
+- Experimental creative workflows
+- Research and development
+- Niche creative applications
+- Advanced AI experimentation
+
+**Performance:**
+- **Inference time:** Variable (5-20 seconds)
+- **Quality:** Specialized capabilities
+- **Cost:** Variable
+
+## Parameters
+
+### Required Parameters
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `prompt` | string | Specialized prompt for experimental generation |
+
+### Optional Parameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `mode` | string | "experimental" | Generation mode |
+| `intensity` | number | 0.5 | Effect intensity (0.0-1.0) |
+| `aspect_ratio` | string | "1:1" | Output aspect ratio |
+| `seed` | number | random | Random seed for reproducible results |
+
+## Examples
+
+### Experimental Generation
+
+```javascript
+const response = await fetch('/api/v1/nano-banana/nano-banan-edit', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer your_api_key',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    prompt: 'Create an abstract representation using quantum field theory visualization',
+    mode: 'experimental',
+    intensity: 0.8,
+    aspect_ratio: '16:9'
+  })
+});
+
+const result = await response.json();
+console.log('Experimental result:', result.images[0].url);
+```
+
+### Research Application
+
+```javascript
+const response = await fetch('/api/v1/nano-banana/nano-banan-edit', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer your_api_key',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    prompt: 'Generate a visualization of neural network activation patterns',
+    mode: 'research',
+    intensity: 0.9,
+    seed: 42
+  })
+});
+
+const result = await response.json();
+console.log('Research visualization:', result.images[0].url);
+```
+
+### Python Example
+
+```python
+import requests
+
+def generate_nano_banana(prompt, **kwargs):
+    response = requests.post(
+        'https://firemoon.studio/api/v1/nano-banana/nano-banan-edit',
+        headers={
+            'Authorization': 'Bearer your_api_key',
+            'Content-Type': 'application/json'
+        },
+        json={
+            'prompt': prompt,
+            'mode': kwargs.get('mode', 'experimental'),
+            'intensity': kwargs.get('intensity', 0.5),
+            'aspect_ratio': kwargs.get('aspect_ratio', '1:1'),
+            **kwargs
+        }
+    )
+
+    response.raise_for_status()
+    return response.json()
+
+# Usage
+result = generate_nano_banana(
+    'Create a fractal-based artistic composition',
+    mode='experimental',
+    intensity=0.7
+)
+
+print(f"Generated result: {result['images'][0]['url']}")
+```
+
+## Response Format
+
+```json
+{
+  "images": [
+    {
+      "url": "https://blob.vercel-storage.com/...",
+      "width": 1024,
+      "height": 1024,
+      "content_type": "image/jpeg"
+    }
+  ],
+  "seed": 123456789,
+  "experimental_metadata": {
+    "mode_used": "experimental",
+    "intensity_applied": 0.8,
+    "processing_notes": "Advanced experimental processing applied"
+  },
+  "timings": {
+    "inference": 14.2
+  }
+}
+```
+
+## Best Practices
+
+### Experimental Prompts
+
+**Leverage unique capabilities:**
+- "Generate using quantum-inspired algorithms"
+- "Apply fractal mathematics to create patterns"
+- "Use chaos theory principles in composition"
+
+**Specify research contexts:**
+- "Create a visualization for machine learning research"
+- "Generate abstract representations of complex systems"
+- "Produce experimental artistic interpretations"
+
+### Use Cases
+
+- **Research**: Academic and scientific visualization
+- **Art**: Experimental and avant-garde creation
+- **Development**: Testing novel AI capabilities
+- **Innovation**: Pushing creative boundaries
+
+## Important Notes
+
+### Experimental Nature
+
+- Results may vary significantly between requests
+- Some features are in beta testing
+- Performance characteristics may change
+- Not recommended for production applications requiring consistency
+
+### Availability
+
+- Features may be limited during testing phases
+- Contact us for access to specific experimental capabilities
+- Some modes may require special approval
+
+## Pricing
+
+Nano Banana features are priced variably based on the experimental nature and resource requirements. Contact us for detailed pricing information.
+
+<Warning>
+  Nano Banana models are experimental and best suited for research, experimentation, and creative exploration rather than production use cases.
+</Warning>
