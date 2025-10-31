@@ -7,17 +7,22 @@ description: "Get started with the Firemoon Studio API in minutes"
 
 Generate your first AI image with the Firemoon Studio API.
 
-### Step 1: Get your API key
+### Step 1: Create your API key
 
 <AccordionGroup>
-  <Accordion icon="key" title="Request API access">
-    Contact us to get your API key for the Firemoon Studio platform.
+  <Accordion icon="key" title="Create API key in dashboard">
+    Create your API key directly from the Firemoon Studio dashboard:
 
-    <Button href="mailto:contact@firemoon.studio">
-      Get API Key
+    1. Sign in to [Firemoon Studio](https://firemoon.studio)
+    2. Navigate to the [API Keys page](https://firemoon.studio/keys)
+    3. Click "Add key" and provide a description
+    4. Copy your API key immediately - you won't be able to see it again!
+
+    <Button href="https://firemoon.studio/keys">
+      Go to API Keys
     </Button>
 
-    <Tip>Include your use case and expected usage volume for faster approval.</Tip>
+    <Tip>You can create multiple API keys for different environments (development, staging, production).</Tip>
   </Accordion>
   <Accordion icon="shield" title="API key security">
     Your API key provides access to generate content. Keep it secure:
@@ -26,6 +31,7 @@ Generate your first AI image with the Firemoon Studio API.
     - Never commit it to version control
     - Rotate keys regularly for security
     - Monitor usage in your dashboard
+    - Delete unused keys immediately
   </Accordion>
 </AccordionGroup>
 
@@ -47,7 +53,7 @@ Generate your first AI image with the Firemoon Studio API.
       }'
     ```
 
-    <Tip>Replace `YOUR_API_KEY` with the key you received from us.</Tip>
+    <Tip>Replace `YOUR_API_KEY` with the API key you created in your dashboard.</Tip>
   </Accordion>
   <Accordion icon="video" title="Generate a video with Kling">
     Create a short video with our Kling integration:

@@ -9,13 +9,27 @@ All requests to the Firemoon Studio API require authentication using an API key 
 
 ## Getting Your API Key
 
-1. Contact us at [contact@firemoon.studio](mailto:contact@firemoon.studio)
-2. Include your use case and expected usage volume
-3. Receive your API key via email
+Create your API key directly from the Firemoon Studio dashboard:
+
+1. Sign in to [Firemoon Studio](https://firemoon.studio)
+2. Navigate to the [API Keys page](https://firemoon.studio/keys)
+3. Click "Add key" button
+4. Enter a description (e.g., "Production API key" or "Development key")
+5. Click "Create key"
+6. **Copy your API key immediately** - you won't be able to see it again after closing the dialog
 
 <Warning>
-  Keep your API key secure and never share it publicly.
+  Keep your API key secure and never share it publicly. Once created, store it safely as you cannot view it again in the dashboard.
 </Warning>
+
+### Managing API Keys
+
+You can create multiple API keys for different purposes:
+- **Development**: For local testing and development
+- **Staging**: For staging environment testing
+- **Production**: For live production applications
+
+Each key can be deleted individually if compromised or no longer needed.
 
 ## Using Your API Key
 
@@ -94,17 +108,24 @@ api_key = os.getenv('FIREMOON_API_KEY')
 - Set up alerts for unusual activity
 - Log authentication failures
 
-## Test Keys
+## API Key Management
 
-For development and testing, you can use these test API keys:
+### Creating Keys via API
 
-| Key | Description | Rate Limit | Providers |
-|-----|-------------|------------|-----------|
-| `test_key_12345` | Full access test key | 60 req/min | All providers |
-| `demo_key_67890` | Limited access key | 30 req/min | flux, ideogram only |
+You can also create API keys programmatically using the API Keys endpoint:
+
+```bash
+curl -X POST https://firemoon.studio/api/keys \
+  -H "Authorization: Bearer YOUR_SESSION_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "description": "Production API key",
+    "scope": "full_access"
+  }'
+```
 
 <Note>
-  Test keys are for development only and should not be used in production.
+  API key creation requires authentication via your user session. For automated key management, use the dashboard at [firemoon.studio/keys](https://firemoon.studio/keys).
 </Note>
 
 ## Troubleshooting
@@ -121,4 +142,7 @@ For development and testing, you can use these test API keys:
 
 ## Support
 
-Need help with authentication? Contact us at [contact@firemoon.studio](mailto:contact@firemoon.studio).
+Need help with authentication? 
+- Visit the [API Keys dashboard](https://firemoon.studio/keys) to manage your keys
+- Check our [documentation](/quickstart) for examples
+- Contact us at [contact@firemoon.studio](mailto:contact@firemoon.studio) for additional support
