@@ -6,31 +6,48 @@ description: "Complete reference for the Firemoon Studio API endpoints"
 ## Base URL
 
 ```
-https://firemoon.studio/api/v1
+https://firemoon.studio/api
 ```
 
-All API requests require authentication using an API key in the Authorization header:
+Most API requests require authentication using an API key in the Authorization header:
 
 ```
 Authorization: Bearer YOUR_API_KEY
 ```
 
+<Note>
+  Some endpoints like `/api/models` and `/api/models-config/*` are public and don't require authentication.
+</Note>
+
 ## Endpoints
-
-### Core Endpoints
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `GET` | `/api/v1` | API information and available endpoints |
-| `GET` | `/api/v1/providers` | List all available providers |
-| `GET` | `/api/v1/providers/{provider}/models` | List models for a specific provider |
-| `GET` | `/api/v1/{provider}/{model}` | Get model information and schema |
 
 ### Generation Endpoints
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `POST` | `/api/v1/{provider}/{model}` | Generate content using a specific model |
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| `POST` | `/api/v1/{provider}/{model}` | Generate content using a specific model | Yes |
+| `GET` | `/api/v1/{provider}/{model}` | Get basic model information | No |
+
+### Model Discovery Endpoints
+
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| `GET` | `/api/models` | List all available models with pricing | No |
+| `GET` | `/api/models-config/{modelid}` | Get detailed configuration for a model | No |
+
+### Account & Usage Endpoints
+
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| `GET` | `/api/credits/balance` | Get your current credit balance | Yes |
+| `GET` | `/api/generations` | Get your generation history | Yes |
+| `GET` | `/api/usage` | Get usage statistics and analytics | Yes |
+
+### Utility Endpoints
+
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| `GET` | `/api/sample-images` | List available sample images | No |
 
 ## Rate Limiting
 
@@ -132,6 +149,19 @@ For video generation, the response includes video URLs instead of images:
   ]
 }
 ```
+
+### 402 Payment Required
+
+```json
+{
+  "error": "Insufficient credits",
+  "message": "Insufficient credits to generate content"
+}
+```
+
+**Common causes:**
+- Credit balance is too low for the requested operation
+- Cost exceeds available balance
 
 ### 500 Internal Server Error
 

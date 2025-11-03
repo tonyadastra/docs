@@ -71,6 +71,27 @@ API key doesn't have access to requested resource.
 - Provider not available in your plan
 - Account suspended
 
+### 402 Payment Required
+
+Insufficient credits to complete the operation.
+
+```json
+{
+  "error": "Insufficient credits",
+  "message": "Insufficient credits to generate content"
+}
+```
+
+**Common causes:**
+- Credit balance is too low
+- Cost of generation exceeds available balance
+- Account needs to add credits
+
+**How to handle:**
+- Check your balance using `/api/credits/balance`
+- Add credits via the dashboard or payment endpoint
+- Implement balance checks before expensive operations
+
 ### 404 Not Found
 
 Requested resource doesn't exist.
@@ -165,6 +186,10 @@ async function generateImage(params) {
         case 401:
           console.error('Authentication failed');
           // Refresh API key or re-authenticate
+          break;
+        case 402:
+          console.error('Insufficient credits');
+          // Check balance and add credits if needed
           break;
         case 429:
           console.error('Rate limited, retrying...');
