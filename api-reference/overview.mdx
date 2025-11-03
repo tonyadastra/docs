@@ -25,15 +25,8 @@ Authorization: Bearer YOUR_API_KEY
 
 | Method | Endpoint | Description | Auth Required |
 |--------|----------|-------------|---------------|
-| `POST` | `/api/v1/{provider}/{model}` | Generate content using a specific model | Yes |
-| `GET` | `/api/v1/{provider}/{model}` | Get basic model information | No |
+| `POST` | `/api/v1/{modelid}` | Generate content using a specific model | Yes |
 
-### Model Discovery Endpoints
-
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| `GET` | `/api/models` | List all available models with pricing | No |
-| `GET` | `/api/models-config/{modelid}` | Get detailed configuration for a model | No |
 
 ### Account & Usage Endpoints
 
@@ -43,19 +36,7 @@ Authorization: Bearer YOUR_API_KEY
 | `GET` | `/api/generations` | Get your generation history | Yes |
 | `GET` | `/api/usage` | Get usage statistics and analytics | Yes |
 
-### Utility Endpoints
 
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| `GET` | `/api/sample-images` | List available sample images | No |
-
-## Rate Limiting
-
-Rate limits are enforced per API key with information returned in response headers:
-
-- `X-RateLimit-Limit`: Maximum requests allowed per minute
-- `X-RateLimit-Remaining`: Remaining requests in current window
-- `X-RateLimit-Reset`: Timestamp when the rate limit resets
 
 ## Response Format
 

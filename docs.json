@@ -24,7 +24,6 @@
             "group": "API fundamentals",
             "pages": [
               "essentials/authentication",
-              "essentials/rate-limits",
               "essentials/error-handling"
             ]
           },
@@ -33,10 +32,8 @@
             "pages": [
               "providers/overview",
               "providers/flux",
-              "providers/ideogram",
               "providers/kling",
               "providers/minimax",
-              "providers/google",
               "providers/nano-banana"
             ]
           }
@@ -48,17 +45,7 @@
           {
             "group": "Core endpoints",
             "pages": [
-              "api-reference/overview",
-              "api-reference/providers",
-              "api-reference/models"
-            ]
-          },
-          {
-            "group": "Generation endpoints",
-            "pages": [
-              "api-reference/generate",
-              "api-reference/status",
-              "api-reference/webhook"
+              "api-reference/overview"
             ]
           },
           {
@@ -73,23 +60,7 @@
       }
     ],
     "global": {
-      "anchors": [
-        {
-          "anchor": "Studio",
-          "href": "https://firemoon.studio",
-          "icon": "zap"
-        },
-        {
-          "anchor": "GitHub",
-          "href": "https://github.com/firemoon-studio",
-          "icon": "github"
-        },
-        {
-          "anchor": "Discord",
-          "href": "https://discord.gg/firemoon",
-          "icon": "message-circle"
-        }
-      ]
+      "anchors": []
     }
   },
   "logo": {
@@ -103,12 +74,8 @@
         "href": "https://firemoon.studio/models"
       },
       {
-        "label": "Pricing",
-        "href": "https://firemoon.studio/pricing"
-      },
-      {
         "label": "Support",
-        "href": "mailto:contact@firemoon.studio"
+        "href": "mailto:hi@firemoon.studio"
       }
     ],
     "primary": {

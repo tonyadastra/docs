@@ -18,6 +18,10 @@ Create your API key directly from the Firemoon Studio dashboard:
 5. Click "Create key"
 6. **Copy your API key immediately** - you won't be able to see it again after closing the dialog
 
+<Button href="https://firemoon.studio/keys">
+  Create API key
+</Button>
+
 <Warning>
   Keep your API key secure and never share it publicly. Once created, store it safely as you cannot view it again in the dashboard.
 </Warning>
@@ -41,16 +45,8 @@ Authorization: Bearer your_api_key_here
 
 ## Example Requests
 
-### cURL
-```bash
-curl -X POST https://firemoon.studio/api/v1/flux/dev \
-  -H "Authorization: Bearer your_api_key_here" \
-  -H "Content-Type: application/json" \
-  -d '{"prompt": "A beautiful sunset"}'
-```
-
-### JavaScript
-```javascript
+<CodeGroup>
+```javascript title="JavaScript"
 const response = await fetch('https://firemoon.studio/api/v1/flux/dev', {
   method: 'POST',
   headers: {
@@ -61,10 +57,12 @@ const response = await fetch('https://firemoon.studio/api/v1/flux/dev', {
     prompt: 'A beautiful sunset'
   })
 });
+
+const result = await response.json();
+console.log('Generated image:', result.images[0].url);
 ```
 
-### Python
-```python
+```python title="Python"
 import requests
 
 response = requests.post(
@@ -75,7 +73,11 @@ response = requests.post(
     },
     json={'prompt': 'A beautiful sunset'}
 )
+
+result = response.json()
+print('Generated image:', result['images'][0]['url'])
 ```
+</CodeGroup>
 
 ## Security Best Practices
 
@@ -87,16 +89,18 @@ Store your API key as an environment variable:
 FIREMOON_API_KEY=your_api_key_here
 ```
 
-```javascript
+<CodeGroup>
+```javascript title="JavaScript"
 // JavaScript
 const apiKey = process.env.FIREMOON_API_KEY;
 ```
 
-```python
+```python title="Python"
 # Python
 import os
 api_key = os.getenv('FIREMOON_API_KEY')
 ```
+</CodeGroup>
 
 ### Key Rotation
 - Rotate API keys regularly (recommended: every 30-90 days)
@@ -143,6 +147,6 @@ curl -X POST https://firemoon.studio/api/keys \
 ## Support
 
 Need help with authentication? 
-- Visit the [API Keys dashboard](https://firemoon.studio/keys) to manage your keys
+- Visit the [API Keys dashboard](https://firemoon.studio/keys) to create and manage your keys
 - Check our [documentation](/quickstart) for examples
-- Contact us at [contact@firemoon.studio](mailto:contact@firemoon.studio) for additional support
+- Contact us at [hi@firemoon.studio](mailto:hi@firemoon.studio) for additional support

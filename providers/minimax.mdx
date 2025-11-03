@@ -47,7 +47,8 @@ The latest multimodal model from MiniMax, capable of advanced creative tasks and
 
 ### Creative Content Generation
 
-```javascript
+<CodeGroup>
+```javascript title="JavaScript"
 const response = await fetch('/api/v1/minimax/hailuo-02', {
   method: 'POST',
   headers: {
@@ -66,39 +67,27 @@ const result = await response.json();
 console.log('Generated image:', result.images[0].url);
 ```
 
-### Python Example
-
-```python
+```python title="Python"
 import requests
 
-def generate_with_minimax(prompt, **kwargs):
-    response = requests.post(
-        'https://firemoon.studio/api/v1/minimax/hailuo-02',
-        headers={
-            'Authorization': 'Bearer your_api_key',
-            'Content-Type': 'application/json'
-        },
-        json={
-            'prompt': prompt,
-            'aspect_ratio': kwargs.get('aspect_ratio', '1:1'),
-            'style': kwargs.get('style', 'auto'),
-            'quality': kwargs.get('quality', 'standard'),
-            **kwargs
-        }
-    )
-
-    response.raise_for_status()
-    return response.json()
-
-# Usage
-result = generate_with_minimax(
-    'An abstract representation of artificial intelligence as a cosmic entity',
-    aspect_ratio='4:3',
-    quality='high'
+response = requests.post(
+    'https://firemoon.studio/api/v1/minimax/hailuo-02',
+    headers={
+        'Authorization': 'Bearer your_api_key',
+        'Content-Type': 'application/json'
+    },
+    json={
+        'prompt': 'A surreal landscape where trees grow musical instruments instead of leaves',
+        'aspect_ratio': '16:9',
+        'style': 'artistic',
+        'quality': 'high'
+    }
 )
 
-print(f"Generated image: {result['images'][0]['url']}")
+result = response.json()
+print('Generated image:', result['images'][0]['url'])
 ```
+</CodeGroup>
 
 ## Response Format
 

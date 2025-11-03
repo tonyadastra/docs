@@ -47,7 +47,8 @@ Experimental editing model with unique capabilities for specialized creative tas
 
 ### Experimental Generation
 
-```javascript
+<CodeGroup>
+```javascript title="JavaScript"
 const response = await fetch('/api/v1/nano-banana/edit', {
   method: 'POST',
   headers: {
@@ -66,9 +67,32 @@ const result = await response.json();
 console.log('Experimental result:', result.images[0].url);
 ```
 
+```python title="Python"
+import requests
+
+response = requests.post(
+    'https://firemoon.studio/api/v1/nano-banana/edit',
+    headers={
+        'Authorization': 'Bearer your_api_key',
+        'Content-Type': 'application/json'
+    },
+    json={
+        'prompt': 'Create an abstract representation using quantum field theory visualization',
+        'mode': 'experimental',
+        'intensity': 0.8,
+        'aspect_ratio': '16:9'
+    }
+)
+
+result = response.json()
+print('Experimental result:', result['images'][0]['url'])
+```
+</CodeGroup>
+
 ### Research Application
 
-```javascript
+<CodeGroup>
+```javascript title="JavaScript"
 const response = await fetch('/api/v1/nano-banana/edit', {
   method: 'POST',
   headers: {
@@ -87,39 +111,27 @@ const result = await response.json();
 console.log('Research visualization:', result.images[0].url);
 ```
 
-### Python Example
-
-```python
+```python title="Python"
 import requests
 
-def generate_nano_banana(prompt, **kwargs):
-    response = requests.post(
-        'https://firemoon.studio/api/v1/nano-banana/edit',
-        headers={
-            'Authorization': 'Bearer your_api_key',
-            'Content-Type': 'application/json'
-        },
-        json={
-            'prompt': prompt,
-            'mode': kwargs.get('mode', 'experimental'),
-            'intensity': kwargs.get('intensity', 0.5),
-            'aspect_ratio': kwargs.get('aspect_ratio', '1:1'),
-            **kwargs
-        }
-    )
-
-    response.raise_for_status()
-    return response.json()
-
-# Usage
-result = generate_nano_banana(
-    'Create a fractal-based artistic composition',
-    mode='experimental',
-    intensity=0.7
+response = requests.post(
+    'https://firemoon.studio/api/v1/nano-banana/edit',
+    headers={
+        'Authorization': 'Bearer your_api_key',
+        'Content-Type': 'application/json'
+    },
+    json={
+        'prompt': 'Generate a visualization of neural network activation patterns',
+        'mode': 'research',
+        'intensity': 0.9,
+        'seed': 42
+    }
 )
 
-print(f"Generated result: {result['images'][0]['url']}")
+result = response.json()
+print('Research visualization:', result['images'][0]['url'])
 ```
+</CodeGroup>
 
 ## Response Format
 

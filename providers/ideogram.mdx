@@ -48,7 +48,8 @@ Advanced character editing with precise control and consistency.
 
 ### Character Outfit Change
 
-```javascript
+<CodeGroup>
+```javascript title="JavaScript"
 const response = await fetch('/api/v1/ideogram/v3-character-edit', {
   method: 'POST',
   headers: {
@@ -67,9 +68,32 @@ const result = await response.json();
 console.log('Edited image:', result.images[0].url);
 ```
 
+```python title="Python"
+import requests
+
+response = requests.post(
+    'https://firemoon.studio/api/v1/ideogram/v3-character-edit',
+    headers={
+        'Authorization': 'Bearer your_api_key',
+        'Content-Type': 'application/json'
+    },
+    json={
+        'prompt': 'Change the character to wear a red dress and high heels',
+        'image_url': 'https://example.com/character.jpg',
+        'style': 'realistic',
+        'magic_prompt_option': 'auto'
+    }
+)
+
+result = response.json()
+print('Edited image:', result['images'][0]['url'])
+```
+</CodeGroup>
+
 ### Product Visualization
 
-```javascript
+<CodeGroup>
+```javascript title="JavaScript"
 const response = await fetch('/api/v1/ideogram/v3-character-edit', {
   method: 'POST',
   headers: {
@@ -88,52 +112,27 @@ const result = await response.json();
 console.log('Product visualization:', result.images[0].url);
 ```
 
-### Python Example
-
-```python
+```python title="Python"
 import requests
 
-def edit_with_ideogram(prompt, image_url, **kwargs):
-    response = requests.post(
-        'https://firemoon.studio/api/v1/ideogram/v3-character-edit',
-        headers={
-            'Authorization': 'Bearer your_api_key',
-            'Content-Type': 'application/json'
-        },
-        json={
-            'prompt': prompt,
-            'image_url': image_url,
-            'style': kwargs.get('style', 'realistic'),
-            'magic_prompt_option': kwargs.get('magic_prompt_option', 'auto'),
-            **kwargs
-        }
-    )
-
-    response.raise_for_status()
-    return response.json()
-
-# Usage
-result = edit_with_ideogram(
-    'Add sunglasses and change hair to blonde',
-    'https://example.com/portrait.jpg'
+response = requests.post(
+    'https://firemoon.studio/api/v1/ideogram/v3-character-edit',
+    headers={
+        'Authorization': 'Bearer your_api_key',
+        'Content-Type': 'application/json'
+    },
+    json={
+        'prompt': 'Add a luxury watch to the mannequin wrist',
+        'image_url': 'https://example.com/product.jpg',
+        'style': 'digital_art',
+        'aspect_ratio': '4:3'
+    }
 )
 
-print(f"Edited image: {result['images'][0]['url']}")
+result = response.json()
+print('Product visualization:', result['images'][0]['url'])
 ```
-
-### cURL Example
-
-```bash
-curl -X POST https://firemoon.studio/api/v1/ideogram/v3-character-edit \
-  -H "Authorization: Bearer your_api_key" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "prompt": "Change the background to a beach at sunset",
-    "image_url": "https://example.com/photo.jpg",
-    "style": "realistic",
-    "aspect_ratio": "16:9"
-  }'
-```
+</CodeGroup>
 
 ## Response Format
 

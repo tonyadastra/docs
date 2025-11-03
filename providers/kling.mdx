@@ -46,7 +46,8 @@ The latest Kling video generation model with enhanced quality and motion smoothn
 
 ### Basic Video Generation
 
-```javascript
+<CodeGroup>
+```javascript title="JavaScript"
 const response = await fetch('/api/v1/kling/kling-2-1-master', {
   method: 'POST',
   headers: {
@@ -64,9 +65,31 @@ const result = await response.json();
 console.log('Video URL:', result.videos[0].url);
 ```
 
+```python title="Python"
+import requests
+
+response = requests.post(
+    'https://firemoon.studio/api/v1/kling/kling-2-1-master',
+    headers={
+        'Authorization': 'Bearer your_api_key',
+        'Content-Type': 'application/json'
+    },
+    json={
+        'prompt': 'A butterfly emerging from its chrysalis and flying away',
+        'duration': '5',
+        'aspect_ratio': '16:9'
+    }
+)
+
+result = response.json()
+print('Video URL:', result['videos'][0]['url'])
+```
+</CodeGroup>
+
 ### Marketing Video
 
-```javascript
+<CodeGroup>
+```javascript title="JavaScript"
 const response = await fetch('/api/v1/kling/kling-2-1-master', {
   method: 'POST',
   headers: {
@@ -85,36 +108,27 @@ const result = await response.json();
 console.log('Marketing video:', result.videos[0].url);
 ```
 
-### Python Example
-
-```python
+```python title="Python"
 import requests
 
-def generate_kling_video(prompt, duration='5', aspect_ratio='16:9'):
-    response = requests.post(
-        'https://firemoon.studio/api/v1/kling/kling-2-1-master',
-        headers={
-            'Authorization': 'Bearer your_api_key',
-            'Content-Type': 'application/json'
-        },
-        json={
-            'prompt': prompt,
-            'duration': duration,
-            'aspect_ratio': aspect_ratio
-        }
-    )
-
-    response.raise_for_status()
-    return response.json()
-
-# Usage
-result = generate_kling_video(
-    'A rocket launching into space with dramatic flames and smoke',
-    duration='10'
+response = requests.post(
+    'https://firemoon.studio/api/v1/kling/kling-2-1-master',
+    headers={
+        'Authorization': 'Bearer your_api_key',
+        'Content-Type': 'application/json'
+    },
+    json={
+        'prompt': 'A sleek electric car driving through a futuristic city at sunset, smooth camera movement following the vehicle',
+        'duration': '10',
+        'aspect_ratio': '16:9',
+        'seed': 12345
+    }
 )
 
-print(f"Generated video: {result['videos'][0]['url']}")
+result = response.json()
+print('Marketing video:', result['videos'][0]['url'])
 ```
+</CodeGroup>
 
 ## Response Format
 

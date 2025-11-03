@@ -47,7 +47,8 @@ Google's fast video generation model optimized for speed and quality.
 
 ### Professional Video Content
 
-```javascript
+<CodeGroup>
+```javascript title="JavaScript"
 const response = await fetch('/api/v1/google/google-veo-3-fast', {
   method: 'POST',
   headers: {
@@ -66,9 +67,32 @@ const result = await response.json();
 console.log('Generated video:', result.videos[0].url);
 ```
 
+```python title="Python"
+import requests
+
+response = requests.post(
+    'https://firemoon.studio/api/v1/google/google-veo-3-fast',
+    headers={
+        'Authorization': 'Bearer your_api_key',
+        'Content-Type': 'application/json'
+    },
+    json={
+        'prompt': 'A luxury car driving through a mountain pass at sunset with dramatic lighting',
+        'duration': '10',
+        'aspect_ratio': '16:9',
+        'style': 'cinematic'
+    }
+)
+
+result = response.json()
+print('Generated video:', result['videos'][0]['url'])
+```
+</CodeGroup>
+
 ### Social Media Content
 
-```javascript
+<CodeGroup>
+```javascript title="JavaScript"
 const response = await fetch('/api/v1/google/google-veo-3-fast', {
   method: 'POST',
   headers: {
@@ -87,39 +111,27 @@ const result = await response.json();
 console.log('Social video:', result.videos[0].url);
 ```
 
-### Python Example
-
-```python
+```python title="Python"
 import requests
 
-def generate_google_video(prompt, **kwargs):
-    response = requests.post(
-        'https://firemoon.studio/api/v1/google/google-veo-3-fast',
-        headers={
-            'Authorization': 'Bearer your_api_key',
-            'Content-Type': 'application/json'
-        },
-        json={
-            'prompt': prompt,
-            'duration': kwargs.get('duration', '5'),
-            'aspect_ratio': kwargs.get('aspect_ratio', '16:9'),
-            'style': kwargs.get('style', 'cinematic'),
-            **kwargs
-        }
-    )
-
-    response.raise_for_status()
-    return response.json()
-
-# Usage
-result = generate_google_video(
-    'A drone flying over a futuristic city at dawn',
-    duration='10',
-    style='epic'
+response = requests.post(
+    'https://firemoon.studio/api/v1/google/google-veo-3-fast',
+    headers={
+        'Authorization': 'Bearer your_api_key',
+        'Content-Type': 'application/json'
+    },
+    json={
+        'prompt': 'Coffee beans falling into a cup forming a heart shape, slow motion',
+        'duration': '5',
+        'aspect_ratio': '9:16',
+        'style': 'vibrant'
+    }
 )
 
-print(f"Generated video: {result['videos'][0]['url']}")
+result = response.json()
+print('Social video:', result['videos'][0]['url'])
 ```
+</CodeGroup>
 
 ## Response Format
 

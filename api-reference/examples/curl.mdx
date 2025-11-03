@@ -273,16 +273,6 @@ curl -X POST https://firemoon.studio/api/v1/flux/dev \
   | jq '.'
 ```
 
-### Check Rate Limits
-
-```bash
-# Show rate limit headers
-curl -X POST https://firemoon.studio/api/v1/flux/dev \
-  -H "Authorization: Bearer your_api_key_here" \
-  -H "Content-Type: application/json" \
-  -d '{"prompt": "A sunset"}' \
-  -I | grep -i rate-limit
-```
 
 ## Automation Scripts
 

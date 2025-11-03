@@ -59,7 +59,8 @@ The primary FLUX model optimized for both speed and quality.
 
 ### Basic Image Generation
 
-```javascript
+<CodeGroup>
+```javascript title="JavaScript"
 const response = await fetch('/api/v1/flux/dev', {
   method: 'POST',
   headers: {
@@ -77,9 +78,31 @@ const result = await response.json();
 console.log('Image URL:', result.images[0].url);
 ```
 
+```python title="Python"
+import requests
+
+response = requests.post(
+    'https://firemoon.studio/api/v1/flux/dev',
+    headers={
+        'Authorization': 'Bearer your_api_key',
+        'Content-Type': 'application/json'
+    },
+    json={
+        'prompt': 'A serene mountain landscape at sunset',
+        'num_images': 1,
+        'image_size': 'landscape_16_9'
+    }
+)
+
+result = response.json()
+print('Image URL:', result['images'][0]['url'])
+```
+</CodeGroup>
+
 ### Advanced Generation with Control
 
-```javascript
+<CodeGroup>
+```javascript title="JavaScript"
 const response = await fetch('/api/v1/flux/dev', {
   method: 'POST',
   headers: {
@@ -101,8 +124,6 @@ result.images.forEach((image, index) => {
   console.log(`Image ${index + 1}:`, image.url);
 });
 ```
-
-### Python Example
 
 ```python
 import requests
@@ -128,29 +149,18 @@ def generate_flux_image(prompt, **kwargs):
 
 # Usage
 result = generate_flux_image(
-    'A beautiful underwater scene with coral reefs',
+    'A futuristic city with flying cars, cyberpunk style, highly detailed',
     num_images=2,
-    guidance_scale=5.0
+    image_size='landscape_16_9',
+    guidance_scale=7.5,
+    num_inference_steps=35,
+    seed=12345
 )
 
 for image in result['images']:
     print(f"Generated image: {image['url']}")
 ```
-
-### cURL Example
-
-```bash
-curl -X POST https://firemoon.studio/api/v1/flux/dev \
-  -H "Authorization: Bearer your_api_key" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "prompt": "A majestic eagle soaring over mountains",
-    "num_images": 1,
-    "image_size": "landscape_16_9",
-    "guidance_scale": 4.0,
-    "seed": 42
-  }'
-```
+</CodeGroup>
 
 ## Best Practices
 
